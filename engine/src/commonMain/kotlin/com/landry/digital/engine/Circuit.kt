@@ -20,6 +20,12 @@ class Circuit {
         outputs.add(pin)
     }
 
+    fun setAsOutput(gate: LogicGate) {
+        val pin = Pin()
+        gate.addOutput(pin)
+        addOutput(pin)
+    }
+
     fun update() {
         gates.forEach { it.update() }
     }

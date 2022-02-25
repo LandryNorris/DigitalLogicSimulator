@@ -37,4 +37,29 @@ class InverterTests {
             assertEquals(currentState, inverter.input.state)
         }
     }
+
+    @Test
+    fun testOddLoopedInverter() {
+        val inverter1 = Inverter()
+        val inverter2 = Inverter()
+        val inverter3 = Inverter()
+        val output = Pin()
+
+        inverter1.addOutput(inverter2.input)
+        inverter2.addOutput(inverter3.input)
+        inverter3.addOutput(inverter1.input)
+        inverter3.addOutput(output)
+
+        inverter1.input.state = true
+        var currentState = false
+
+        repeat(100) {
+            inverter1.update()
+            inverter2.update()
+            inverter3.update()
+
+            assertEquals(currentState, output.state)
+            currentState = !currentState
+        }
+    }
 }
