@@ -1,5 +1,6 @@
 plugins {
     kotlin("multiplatform")
+    id("io.gitlab.arturbosch.detekt") version "1.19.0"
     id("org.jetbrains.kotlinx.kover") version "0.5.0"
 }
 
@@ -49,4 +50,10 @@ kover {
     isDisabled = false
     coverageEngine.set(kotlinx.kover.api.CoverageEngine.INTELLIJ)
     generateReportOnCheck = true
+}
+
+detekt {
+    source = files(
+        "src/commonMain/kotlin"
+    )
 }

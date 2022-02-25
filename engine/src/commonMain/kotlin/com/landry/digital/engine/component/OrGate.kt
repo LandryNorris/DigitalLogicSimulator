@@ -1,6 +1,6 @@
 package com.landry.digital.engine.component
 
-class OrGate: LogicGate() {
+class OrGate: LogicGate {
     private val input1 = Pin()
     private val input2 = Pin()
     override val inputs = listOf(input1, input2)

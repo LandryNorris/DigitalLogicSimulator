@@ -1,6 +1,6 @@
 package com.landry.digital.engine.component
 
-class Buffer: LogicGate() {
+class Buffer: LogicGate {
     val input = Pin()
     override val inputs = listOf(input)
     override val outputs = arrayListOf<Pin>()
