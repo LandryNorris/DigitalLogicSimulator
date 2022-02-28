@@ -15,14 +15,20 @@ class InverterTests {
         inverter.addOutput(pin)
         inverter.inputs.first().state = true
         inverter.update()
+        inverter.apply()
         assertFalse(pin.state)
 
         inverter.inputs.first().state = false
         inverter.update()
+        inverter.apply()
         assertTrue(pin.state)
+
         inverter.update()
+        inverter.apply()
         assertTrue(pin.state)
+
         inverter.update()
+        inverter.apply()
         assertTrue(pin.state)
     }
 
@@ -33,6 +39,7 @@ class InverterTests {
         var currentState = inverter.input.state //may allow randomized starting states.
         repeat(100) {
             inverter.update()
+            inverter.apply()
             currentState = !currentState
             assertEquals(currentState, inverter.input.state)
         }
@@ -51,15 +58,20 @@ class InverterTests {
         inverter3.addOutput(output)
 
         inverter1.input.state = true
-        var currentState = false
+        var currentState = true
 
         repeat(100) {
             inverter1.update()
             inverter2.update()
             inverter3.update()
 
+            inverter1.apply()
+            inverter2.apply()
+            inverter3.apply()
+            println("state: ${output.state}")
+
             assertEquals(currentState, output.state)
-            currentState = !currentState
+            if(it % 3 == 0) currentState = !currentState
         }
     }
 }

@@ -5,12 +5,10 @@ class OrGate: LogicGate {
     private val input2 = Pin()
     override val inputs = listOf(input1, input2)
     override val outputs = arrayListOf<Pin>()
+    override var nextState = false
 
     override fun update() {
-        val result = input1.state || input2.state
-        outputs.forEach {
-            it.state = result
-        }
+        nextState = input1.state || input2.state
     }
 
     override fun addOutput(pin: Pin) { outputs.add(pin) }

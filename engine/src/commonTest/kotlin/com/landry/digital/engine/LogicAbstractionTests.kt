@@ -29,14 +29,16 @@ class LogicAbstractionTests {
 
         circuit.inputs.first().state = false
         circuit.inputs.last().state = false
-        //takes 2 cycles to stabilize
-        circuit.update()
-        circuit.update()
+        //takes 3 cycles to stabilize
+        circuit.tick()
+        circuit.tick()
+        circuit.tick()
         assertFalse(circuit.outputs.first().state)
     }
 
     @Test
     fun testNandAsInverter() {
+        val circuit = Circuit()
         val buffer = Buffer()
         val gate = NandGate()
         val output = Pin()
@@ -45,21 +47,26 @@ class LogicAbstractionTests {
         buffer.addOutput(gate.inputs.last())
         gate.addOutput(output)
 
+        circuit.addGate(gate)
+        circuit.addGate(buffer)
+        circuit.addInput(buffer.input)
+        circuit.addInput(output)
+
         buffer.input.state = false
-        buffer.update()
-        gate.update()
+        circuit.tick()
+        circuit.tick()
 
         assertTrue(output.state)
 
         buffer.input.state = false
-        buffer.update()
-        gate.update()
+        circuit.tick()
+        circuit.tick()
 
         assertTrue(output.state)
 
         buffer.input.state = true
-        buffer.update()
-        gate.update()
+        circuit.tick()
+        circuit.tick()
 
         assertFalse(output.state)
     }

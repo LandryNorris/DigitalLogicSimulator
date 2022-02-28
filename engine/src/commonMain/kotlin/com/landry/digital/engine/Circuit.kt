@@ -29,4 +29,13 @@ class Circuit {
     fun update() {
         gates.forEach { it.update() }
     }
+
+    fun apply() {
+        gates.forEach { it.apply() }
+    }
+
+    fun tick() {
+        update()
+        apply()
+    }
 }

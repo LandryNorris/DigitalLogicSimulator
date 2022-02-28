@@ -20,6 +20,7 @@ fun testCombinationalGate(gateUnderTest: LogicGate, inputs: List<Boolean>, outpu
         it.first.state = it.second
     }
     gateUnderTest.update()
+    gateUnderTest.apply()
 
 
     val outputStates = gateUnderTest.outputs.map { it.state }
