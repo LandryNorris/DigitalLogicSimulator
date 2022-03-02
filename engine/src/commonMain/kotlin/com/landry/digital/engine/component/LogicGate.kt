@@ -1,7 +1,7 @@
 package com.landry.digital.engine.component
 
 interface LogicGate {
-    val inputs: List<Pin>
+    val inputs: MutableList<Pin>
     val outputs: List<Pin>
     var nextState: Boolean
 
@@ -11,5 +11,4 @@ interface LogicGate {
             it.state = nextState
         }
     }
-    fun addOutput(pin: Pin)
 }

@@ -5,11 +5,6 @@ import com.landry.digital.engine.component.Pin
 import kotlin.test.assertContentEquals
 
 fun testTruthTable(gateUnderTest: LogicGate, table: List<Pair<List<Boolean>, List<Boolean>>>) {
-    for(i in table.first().second.indices) {
-        val pin = Pin()
-        gateUnderTest.addOutput(pin)
-    }
-
     for(test in table) {
         testCombinationalGate(gateUnderTest, test.first, test.second)
     }

@@ -11,8 +11,7 @@ class InverterTests {
     @Test
     fun testInverter() {
         val inverter = Inverter()
-        val pin = Pin()
-        inverter.addOutput(pin)
+        val pin = inverter.output
         inverter.inputs.first().state = true
         inverter.update()
         inverter.apply()
@@ -35,7 +34,7 @@ class InverterTests {
     @Test
     fun testLoopedInverter() {
         val inverter = Inverter()
-        inverter.addOutput(inverter.input)
+        inverter.input = inverter.output
         var currentState = inverter.input.state //may allow randomized starting states.
         repeat(100) {
             inverter.update()
@@ -50,12 +49,11 @@ class InverterTests {
         val inverter1 = Inverter()
         val inverter2 = Inverter()
         val inverter3 = Inverter()
-        val output = Pin()
 
-        inverter1.addOutput(inverter2.input)
-        inverter2.addOutput(inverter3.input)
-        inverter3.addOutput(inverter1.input)
-        inverter3.addOutput(output)
+        inverter2.input = inverter1.output
+        inverter3.input = inverter2.output
+        inverter1.input = inverter3.output
+        val output = inverter3.output
 
         inverter1.input.state = true
         var currentState = true

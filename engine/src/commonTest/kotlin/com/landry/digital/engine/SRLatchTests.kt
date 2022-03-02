@@ -77,14 +77,11 @@ class SRLatchTests {
         val circuit = Circuit()
         val nor1 = NorGate()
         val nor2 = NorGate()
-        val output1 = Pin()
-        val output2 = Pin()
+        val output1 = nor1.outputs.first()
+        val output2 = nor2.outputs.first()
 
-        nor1.addOutput(output1)
-        nor2.addOutput(output2)
-
-        nor1.addOutput(nor2.inputs.first())
-        nor2.addOutput(nor1.inputs.last())
+        nor2.input1 = nor1.outputs.first()
+        nor1.input2 = nor2.outputs.first()
 
         circuit.addGate(nor1)
         circuit.addGate(nor2)

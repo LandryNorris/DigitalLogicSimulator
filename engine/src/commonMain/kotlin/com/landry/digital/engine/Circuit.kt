@@ -21,9 +21,7 @@ class Circuit {
     }
 
     fun setAsOutput(gate: LogicGate) {
-        val pin = Pin()
-        gate.addOutput(pin)
-        addOutput(pin)
+        addOutput(gate.outputs.first())
     }
 
     fun update() {

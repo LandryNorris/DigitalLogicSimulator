@@ -1,14 +1,11 @@
 package com.landry.digital.engine.component
 
-class Buffer: LogicGate {
-    val input = Pin()
-    override val inputs = listOf(input)
-    override val outputs = arrayListOf<Pin>()
+class Buffer: SingleOutput, SingleInput {
+    override val inputs = mutableListOf(Pin())
+    override val outputs = listOf(Pin())
     override var nextState = false
 
     override fun update() {
-        nextState = input.state
+        nextState = inputs.first().state
     }
-
-    override fun addOutput(pin: Pin) { outputs.add(pin) }
 }

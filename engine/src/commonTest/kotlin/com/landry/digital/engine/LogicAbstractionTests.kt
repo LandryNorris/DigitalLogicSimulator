@@ -23,9 +23,9 @@ class LogicAbstractionTests {
         circuit.addInput(inverter2.input)
         circuit.setAsOutput(inverter3)
 
-        inverter1.addOutput(and.inputs.first())
-        inverter2.addOutput(and.inputs.last())
-        and.addOutput(inverter3.input)
+        and.input1 = inverter1.output
+        and.input2 = inverter1.output
+        inverter3.input = and.outputs.first()
 
         circuit.inputs.first().state = false
         circuit.inputs.last().state = false
@@ -41,11 +41,10 @@ class LogicAbstractionTests {
         val circuit = Circuit()
         val buffer = Buffer()
         val gate = NandGate()
-        val output = Pin()
 
-        buffer.addOutput(gate.inputs.first())
-        buffer.addOutput(gate.inputs.last())
-        gate.addOutput(output)
+        gate.input1 = buffer.output
+        gate.input2 = buffer.output
+        val output = gate.outputs.first()
 
         circuit.addGate(gate)
         circuit.addGate(buffer)

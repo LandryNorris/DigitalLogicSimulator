@@ -1,15 +1,11 @@
 package com.landry.digital.engine.component
 
-class AndGate: LogicGate {
-    private val input1 = Pin()
-    private val input2 = Pin()
-    override val inputs = listOf(input1, input2)
-    override val outputs = arrayListOf<Pin>()
+class AndGate: TwoInput, SingleOutput {
+    override val inputs = mutableListOf(Pin(), Pin())
+    override val outputs = listOf(Pin())
     override var nextState = false
 
     override fun update() {
-        nextState = input1.state && input2.state
+        nextState = inputs.first().state && inputs.last().state
     }
-
-    override fun addOutput(pin: Pin) { outputs.add(pin) }
 }
