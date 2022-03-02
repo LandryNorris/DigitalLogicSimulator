@@ -57,6 +57,18 @@ class SRLatchTests {
         assertFalse(srCircuit.outputs.last().state)
     }
 
+    @Test
+    fun testUndefinedSRLatchDoesntCrash() {
+        val latch = makeSRLatch()
+        latch.inputs.first().state = true
+        latch.inputs.last().state = true
+
+        latch.tick()
+        latch.tick()
+        latch.tick()
+        latch.tick()
+    }
+
     /**
      * Creates a nor-based SR latch. Inputs[0] represents R and inputs[1] represents S,
      * outputs[0] represents Q and outputs[1] represents Q not
