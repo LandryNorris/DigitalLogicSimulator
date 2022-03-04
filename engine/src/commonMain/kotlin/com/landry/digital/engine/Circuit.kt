@@ -32,6 +32,10 @@ class Circuit {
         gates.forEach { it.apply() }
     }
 
+    fun addCircuit(circuit: Circuit) {
+        gates.addAll(circuit.gates)
+    }
+
     fun tick() {
         update()
         apply()

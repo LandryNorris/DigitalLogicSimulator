@@ -8,7 +8,7 @@ class DFlipFlopTests {
 
     @Test
     fun testDFlipFlop() {
-        val circuit = createDFlipFlop()
+        val circuit = makeDFlipFlop()
 
         val d = circuit.inputs[0]
         val q = circuit.outputs[0]
@@ -31,6 +31,11 @@ class DFlipFlopTests {
         clockLow(circuit)
         clockHigh(circuit)
         assertFalse(q.state)
+
+        d.state = true
+        clockLow(circuit)
+        clockHigh(circuit)
+        assertTrue(q.state)
     }
 
     private fun clockLow(circuit: Circuit) {

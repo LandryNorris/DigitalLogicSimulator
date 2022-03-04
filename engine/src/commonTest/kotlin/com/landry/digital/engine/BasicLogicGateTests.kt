@@ -49,6 +49,18 @@ class BasicLogicGateTests {
     }
 
     @Test
+    fun testXorGateTruthTable() {
+        val gate = XorGate()
+
+        testTruthTable(gate, listOf(
+            listOf(false, false) to listOf(false),
+            listOf(true, false) to listOf(true),
+            listOf(false, true) to listOf(true),
+            listOf(true, true) to listOf(false),
+        ))
+    }
+
+    @Test
     fun testNandGateTruthTable() {
         val gate = NandGate()
 
