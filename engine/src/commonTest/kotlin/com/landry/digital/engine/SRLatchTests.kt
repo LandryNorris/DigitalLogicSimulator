@@ -68,30 +68,4 @@ class SRLatchTests {
         latch.tick()
         latch.tick()
     }
-
-    /**
-     * Creates a nor-based SR latch. Inputs[0] represents R and inputs[1] represents S,
-     * outputs[0] represents Q and outputs[1] represents Q not
-     */
-    private fun makeSRLatch(): Circuit {
-        val circuit = Circuit()
-        val nor1 = NorGate()
-        val nor2 = NorGate()
-        val output1 = nor1.outputs.first()
-        val output2 = nor2.outputs.first()
-
-        nor2.input1 = nor1.outputs.first()
-        nor1.input2 = nor2.outputs.first()
-
-        circuit.addGate(nor1)
-        circuit.addGate(nor2)
-
-        circuit.addInput(nor1.inputs.first())
-        circuit.addInput(nor2.inputs.last())
-
-        circuit.addOutput(output1)
-        circuit.addOutput(output2)
-
-        return circuit
-    }
 }
