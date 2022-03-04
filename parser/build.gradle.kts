@@ -4,7 +4,7 @@ plugins {
     id("org.jetbrains.kotlinx.kover") version "0.5.0"
 }
 
-group = "com.landry.digital.circuit.simulator.engine"
+group = "com.landry.digital.circuit.simulator.parser"
 version = "1.0-SNAPSHOT"
 
 repositories {
@@ -17,7 +17,9 @@ kotlin {
 
     sourceSets {
         val commonMain by getting {
-
+            dependencies {
+                implementation("com.squareup.okio:okio:3.0.0")
+            }
         }
 
         val commonTest by getting {
