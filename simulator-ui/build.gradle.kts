@@ -1,10 +1,11 @@
 plugins {
     kotlin("multiplatform")
+    id("org.jetbrains.compose") version "1.1.1"
     id("io.gitlab.arturbosch.detekt") version "1.19.0"
     id("org.jetbrains.kotlinx.kover") version "0.5.0"
 }
 
-group = "com.landry.digital.circuit.simulator.parser"
+group = "com.landry.digital.circuit.simulator.ui"
 version = "1.0-SNAPSHOT"
 
 repositories {
@@ -13,22 +14,37 @@ repositories {
 
 kotlin {
     jvm()
-    linuxX64()
 
     sourceSets {
         val commonMain by getting {
             dependencies {
                 implementation(project(":engine"))
-                implementation("com.squareup.okio:okio:3.1.0")
             }
         }
 
         val commonTest by getting {
             dependencies {
                 implementation(kotlin("test"))
-                implementation("com.squareup.okio:okio-fakefilesystem:3.1.0")
             }
         }
+
+        val composeMain by creating {
+            dependsOn(commonMain)
+
+            dependencies {
+                implementation(project(":engine"))
+                implementation(compose.ui)
+                implementation(compose.material)
+                //implementation(compose.material3)
+                implementation(compose.materialIconsExtended)
+                implementation(compose.uiTooling)
+                implementation(compose.foundation)
+                implementation(compose.preview)
+                implementation(compose.runtime)
+            }
+        }
+
+        val jvmMain by getting { dependsOn(composeMain) }
     }
 }
 

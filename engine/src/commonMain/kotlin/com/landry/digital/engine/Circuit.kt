@@ -4,7 +4,7 @@ import com.landry.digital.engine.component.LogicGate
 import com.landry.digital.engine.component.Pin
 
 class Circuit {
-    private val gates = arrayListOf<LogicGate>()
+    val gates = arrayListOf<LogicGate>()
     val inputs = arrayListOf<Pin>()
     val outputs = arrayListOf<Pin>()
 
