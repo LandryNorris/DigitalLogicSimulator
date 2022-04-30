@@ -3,7 +3,6 @@ package com.landry.digital.logic.simulator.ui
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -47,7 +46,6 @@ fun Gate.draw(gridSize: Dp = 10.dp) {
 fun DrawScope.andGateUI(gate: AndGate) {
     val width = this.size.width
     val height = this.size.height
-    println("Gate size is $width x $height")
 
     val startX = 0f
     val startY = 0f
@@ -88,11 +86,12 @@ fun DrawScope.nandGateUI(gate: NandGate) {
     val width = this.size.width
     val height = this.size.height
 
-    val startX = width/10
+    val startX = 0f
     val startY = 0f
-    val endX = width*7/10
+    val endX = width
     val endY = height
-    val conversionX = width/2
+    val arcEndX = width*7/10
+    val conversionX = arcEndX/2
 
     drawLine(Color.Black,
         start = Offset(startX, startY),
@@ -109,7 +108,7 @@ fun DrawScope.nandGateUI(gate: NandGate) {
         end = Offset(conversionX, endY),
         strokeWidth = stroke)
 
-    val arcWidth = (endX - conversionX)*2
+    val arcWidth = (arcEndX - conversionX)*2
     drawArc(color = Color.Black,
         startAngle = -90f,
         sweepAngle = 180f,
@@ -117,6 +116,11 @@ fun DrawScope.nandGateUI(gate: NandGate) {
         topLeft = Offset(conversionX - arcWidth / 2, startY),
         size = Size(arcWidth, height),
         style = Stroke(width = stroke, cap = StrokeCap.Round)
+    )
+
+    drawCircle(color = Color.Black,
+        radius = (endX - arcEndX)/2, center = Offset(endX - (endX - arcEndX)/2, height/2),
+        style = Stroke(width = stroke)
     )
 
     drawPins(gate.inputs.map { it.state }, startX, startY, endY, radius = height/10)

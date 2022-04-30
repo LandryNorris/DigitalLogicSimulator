@@ -66,7 +66,6 @@ class InverterTests {
             inverter1.apply()
             inverter2.apply()
             inverter3.apply()
-            println("state: ${output.state}")
 
             assertEquals(currentState, output.state)
             if(it % 3 == 0) currentState = !currentState

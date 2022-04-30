@@ -1,16 +1,13 @@
 package com.landry.digital.logic.simulator.ui
 
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.focusable
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.layout.*
-import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kotlin.math.ceil
@@ -19,47 +16,27 @@ data class SimulatorLayoutState(val currentX: Double = 0.0, val currentY: Double
 
 @Composable
 fun SimulatorLayout(modifier: Modifier = Modifier,
-                    state: SimulatorLayoutState = SimulatorLayoutState(),
+                    layoutState: SimulatorLayoutState = SimulatorLayoutState(),
                     circuit: CircuitUI) {
     Canvas(modifier) {
-        drawGrid(state, Color.DarkGray)
+        drawGrid(layoutState, Color.DarkGray)
     }
 
-    Layout(
-        modifier = modifier,
-        content = {
-            for(gate in circuit.gates) {
-                gate.draw(state.gridSize)
-            }
-        },
-        measurePolicy = circuitMeasurePolicy()
-    )
-}
-
-@Composable
-fun circuitMeasurePolicy() = MeasurePolicy { measurables, constraints ->
-    val placeables = measurables.map {
-        it.measure(constraints.copy(minWidth = 0, minHeight = 0))
-    }
-
-    layout(constraints.maxWidth, constraints.maxHeight) {
-        placeables.forEach { placeable ->
-            placeable.placeRelative(0, 0)
-            println(placeable)
-        }
+    for(gate in circuit.gates) {
+        gate.draw(layoutState.gridSize)
     }
 }
 
 fun DrawScope.drawGrid(simulatorLayoutState: SimulatorLayoutState, color: Color) {
-    val numCols = ceil(size.width.dp / simulatorLayoutState.gridSize).toInt()
-    val numRows = ceil(size.height.dp / simulatorLayoutState.gridSize).toInt()
-
-    for(i in 0 .. numCols) {
-        val x = size.width * i/numCols
+    var x = 0f
+    while(x < size.width) {
         drawLine(color, start = Offset(x, 0f), end = Offset(x, size.height))
+        x += simulatorLayoutState.gridSize.roundToPx()
     }
-    for(i in 0 .. numRows) {
-        val y = size.height * i/numRows
+
+    var y = 0f
+    while(y < size.height) {
         drawLine(color, start = Offset(0f, y), end = Offset(size.width, y))
+        y += simulatorLayoutState.gridSize.roundToPx()
     }
 }

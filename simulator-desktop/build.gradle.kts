@@ -1,6 +1,8 @@
 import org.jetbrains.compose.desktop.application.dsl.*
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
+val decomposeVersion: String by project
+
 plugins {
     kotlin("jvm")
     id("org.jetbrains.compose") version "1.1.1"
@@ -21,11 +23,12 @@ dependencies {
     implementation(compose.desktop.currentOs)
     implementation(project(":simulator-ui"))
     implementation(project(":engine"))
+    implementation("com.arkivanov.decompose:decompose:$decomposeVersion")
+    implementation("com.arkivanov.decompose:extensions-compose-jetbrains:$decomposeVersion")
 }
 
 tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "11"
-    kotlinOptions.allWarningsAsErrors = true
     kotlinOptions.freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
 }
 
