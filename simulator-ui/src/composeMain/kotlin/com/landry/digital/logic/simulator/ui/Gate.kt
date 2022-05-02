@@ -11,5 +11,8 @@ fun Gate.size() = when(gate) {
     is NorGate,
     is OrGate -> 4 to 4
 
+    is Buffer,
+    is Inverter -> 4 to 2
+
     else -> error("Size not set for gate $gate")
 }

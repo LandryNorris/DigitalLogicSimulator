@@ -7,10 +7,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
-import androidx.compose.ui.layout.*
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import kotlin.math.ceil
 
 data class SimulatorLayoutState(val currentX: Double = 0.0, val currentY: Double = 0.0, val gridSize: Dp = 10.dp)
 
@@ -19,11 +17,15 @@ fun SimulatorLayout(modifier: Modifier = Modifier,
                     layoutState: SimulatorLayoutState = SimulatorLayoutState(),
                     circuit: CircuitUI) {
     Canvas(modifier) {
-        drawGrid(layoutState, Color.DarkGray)
+        drawGrid(layoutState, Color(red = 0, green = 0, blue = 0, alpha = 0x90))
     }
 
     for(gate in circuit.gates) {
         gate.draw(layoutState.gridSize)
+    }
+
+    for(wire in circuit.wires) {
+        wire.draw(layoutState.gridSize)
     }
 }
 

@@ -9,7 +9,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.Dp
@@ -19,13 +18,16 @@ import com.landry.digital.engine.component.*
 private const val stroke = 2f
 private val onColor = Color(0x32, 0xCD, 0x32)
 private val offColor = Color(0x00, 0x64, 0x00)
+val strokeStyle = Stroke(stroke)
 
-fun DrawScope.drawPins(values: List<Boolean>, x: Float, startY: Float, endY: Float, radius: Float) {
+fun DrawScope.drawPins(values: List<Boolean>, x: Float, startY: Float, spacing: Float = 0f, radius: Float) {
+    var y = startY
     for(i in values.indices) {
         val value = values[i]
         val color = if(value) onColor else offColor
-        drawCircle(color = color, radius = radius, style = Stroke(stroke),
-            center = Offset(x, (endY-startY)*(i+1)/(values.size+1)))
+        drawCircle(color = color, radius = radius, style = strokeStyle,
+            center = Offset(x, y))
+        y += spacing
     }
 }
 
@@ -39,6 +41,9 @@ fun Gate.draw(gridSize: Dp = 10.dp) {
             is NandGate -> nandGateUI(gate)
             is XorGate -> xorGateUI(gate)
             is OrGate -> orGateUI(gate)
+            is NorGate -> norGateUI(gate)
+            is Inverter -> inverterUI(gate)
+            is Buffer -> bufferUI(gate)
         }
     }
 }
@@ -46,16 +51,15 @@ fun Gate.draw(gridSize: Dp = 10.dp) {
 fun DrawScope.andGateUI(gate: AndGate) {
     val width = this.size.width
     val height = this.size.height
+    val gridSize = height/4
 
     val startX = 0f
     val startY = 0f
-    val endX = width
-    val endY = height
     val conversionX = width/2
 
     drawLine(Color.Black,
         start = Offset(startX, startY),
-        end = Offset(startX, endY),
+        end = Offset(startX, height),
         strokeWidth = stroke)
 
     drawLine(Color.Black,
@@ -64,38 +68,37 @@ fun DrawScope.andGateUI(gate: AndGate) {
         strokeWidth = stroke)
 
     drawLine(color = Color.Black,
-        start = Offset(startX, endY),
-        end = Offset(conversionX, endY),
+        start = Offset(startX, height),
+        end = Offset(conversionX, height),
         strokeWidth = stroke)
 
-    val arcWidth = (endX - conversionX)*2
+    val arcWidth = (width - conversionX) * 2
     drawArc(color = Color.Black,
         startAngle = -90f,
         sweepAngle = 180f,
         useCenter = false,
         topLeft = Offset(conversionX - arcWidth / 2, startY),
         size = Size(arcWidth, height),
-        style = Stroke(width = stroke, cap = StrokeCap.Round)
+        style = strokeStyle
     )
 
-    drawPins(gate.inputs.map { it.state }, startX, startY, endY, radius = height/10)
-    drawPins(gate.outputs.map { it.state }, endX, startY, endY, radius = height/10)
+    drawPins(gate.inputs.map { it.state }, startX, startY + gridSize, gridSize*2, radius = height/10)
+    drawPins(gate.outputs.map { it.state }, width, height / 2, radius = height / 10)
 }
 
 fun DrawScope.nandGateUI(gate: NandGate) {
     val width = this.size.width
     val height = this.size.height
+    val gridSize = height/4
 
     val startX = 0f
     val startY = 0f
-    val endX = width
-    val endY = height
     val arcEndX = width*7/10
     val conversionX = arcEndX/2
 
     drawLine(Color.Black,
         start = Offset(startX, startY),
-        end = Offset(startX, endY),
+        end = Offset(startX, height),
         strokeWidth = stroke)
 
     drawLine(Color.Black,
@@ -104,8 +107,8 @@ fun DrawScope.nandGateUI(gate: NandGate) {
         strokeWidth = stroke)
 
     drawLine(color = Color.Black,
-        start = Offset(startX, endY),
-        end = Offset(conversionX, endY),
+        start = Offset(startX, height),
+        end = Offset(conversionX, height),
         strokeWidth = stroke)
 
     val arcWidth = (arcEndX - conversionX)*2
@@ -115,27 +118,26 @@ fun DrawScope.nandGateUI(gate: NandGate) {
         useCenter = false,
         topLeft = Offset(conversionX - arcWidth / 2, startY),
         size = Size(arcWidth, height),
-        style = Stroke(width = stroke, cap = StrokeCap.Round)
+        style = strokeStyle
     )
 
     drawCircle(color = Color.Black,
-        radius = (endX - arcEndX)/2, center = Offset(endX - (endX - arcEndX)/2, height/2),
+        radius = (width - arcEndX) / 2, center = Offset(width - (width - arcEndX) / 2, height / 2),
         style = Stroke(width = stroke)
     )
 
-    drawPins(gate.inputs.map { it.state }, startX, startY, endY, radius = height/10)
-    drawPins(gate.outputs.map { it.state }, endX, startY, endY, radius = height/10)
+    drawPins(gate.inputs.map { it.state }, startX, startY+gridSize, gridSize*2, radius = height/10)
+    drawPins(gate.outputs.map { it.state }, width, height / 2, radius = height / 10)
 }
 
-fun DrawScope.orGateUI(gate: LogicGate, size: Dp = 40.dp) {
+fun DrawScope.orGateUI(gate: LogicGate) {
     val width = this.size.width
     val height = this.size.height
+    val gridSize = height/4
 
     val startX = 0f
     val startY = 0f
-    val inputX = width/10
     val endX = width*9/10
-    val endY = height
     val conversionX = width/2
 
     val orArcWidth = width/5
@@ -145,7 +147,7 @@ fun DrawScope.orGateUI(gate: LogicGate, size: Dp = 40.dp) {
         useCenter = false,
         topLeft = Offset(startX - orArcWidth/2, startY),
         size = Size(orArcWidth, height),
-        style = Stroke(width = stroke, cap = StrokeCap.Round)
+        style = strokeStyle
     )
 
     drawLine(Color.Black,
@@ -154,8 +156,8 @@ fun DrawScope.orGateUI(gate: LogicGate, size: Dp = 40.dp) {
         strokeWidth = stroke)
 
     drawLine(color = Color.Black,
-        start = Offset(startX, endY),
-        end = Offset(conversionX, endY),
+        start = Offset(startX, height),
+        end = Offset(conversionX, height),
         strokeWidth = stroke)
 
     val arcWidth = (endX - conversionX)*2
@@ -165,23 +167,71 @@ fun DrawScope.orGateUI(gate: LogicGate, size: Dp = 40.dp) {
         useCenter = false,
         topLeft = Offset(conversionX - arcWidth / 2, startY),
         size = Size(arcWidth, height),
-        style = Stroke(width = stroke, cap = StrokeCap.Round)
+        style = strokeStyle
     )
 
-    drawPins(gate.inputs.map { it.state }, inputX, startY, endY, radius = height/10)
-    drawPins(gate.outputs.map { it.state }, endX, startY, endY, radius = height/10)
+    drawPins(gate.inputs.map { it.state }, startX, startY+gridSize, gridSize*2, radius = height/10)
+    drawPins(gate.outputs.map { it.state }, endX, height/2, radius = height/10)
 }
 
-fun DrawScope.xorGateUI(gate: LogicGate, size: Dp = 40.dp) {
+fun DrawScope.norGateUI(gate: NorGate) {
     val width = this.size.width
     val height = this.size.height
+    val gridSize = height/4
+
+    val startX = 0f
+    val startY = 0f
+    val arcEndX = width*7/10
+    val conversionX = arcEndX/2
+
+    val orArcWidth = width/5
+    drawArc(color = Color.Black,
+        startAngle = -90f,
+        sweepAngle = 180f,
+        useCenter = false,
+        topLeft = Offset(startX - orArcWidth/2, startY),
+        size = Size(orArcWidth, height),
+        style = strokeStyle
+    )
+
+    drawLine(Color.Black,
+        start = Offset(startX, startY),
+        end = Offset(conversionX, startY),
+        strokeWidth = stroke)
+
+    drawLine(color = Color.Black,
+        start = Offset(startX, height),
+        end = Offset(conversionX, height),
+        strokeWidth = stroke)
+
+    val arcWidth = (arcEndX - conversionX)*2
+    drawArc(color = Color.Black,
+        startAngle = -90f,
+        sweepAngle = 180f,
+        useCenter = false,
+        topLeft = Offset(conversionX - arcWidth / 2, startY),
+        size = Size(arcWidth, height),
+        style = strokeStyle
+    )
+
+    drawCircle(color = Color.Black,
+        radius = (width - arcEndX) / 2, center = Offset(width - (width - arcEndX) / 2, height / 2),
+        style = Stroke(width = stroke)
+    )
+
+    drawPins(gate.inputs.map { it.state }, startX, startY+gridSize, gridSize*2, radius = height/10)
+    drawPins(gate.outputs.map { it.state }, width, height / 2, radius = height / 10)
+}
+
+fun DrawScope.xorGateUI(gate: LogicGate) {
+    val width = this.size.width
+    val height = this.size.height
+    val gridSize = height/4
 
     val startX = width/6f
     val startY = 0f
     val endX = width*9/10
-    val endY = height
     val conversionX = width/2
-    val inputX = width/10
 
     val orArcWidth = width/5
     drawArc(color = Color.Black,
@@ -190,7 +240,7 @@ fun DrawScope.xorGateUI(gate: LogicGate, size: Dp = 40.dp) {
         useCenter = false,
         topLeft = Offset(-orArcWidth/2, startY),
         size = Size(orArcWidth, height),
-        style = Stroke(width = stroke, cap = StrokeCap.Round)
+        style = strokeStyle
     )
 
     drawArc(color = Color.Black,
@@ -199,7 +249,7 @@ fun DrawScope.xorGateUI(gate: LogicGate, size: Dp = 40.dp) {
         useCenter = false,
         topLeft = Offset(startX-orArcWidth/2, startY),
         size = Size(orArcWidth, height),
-        style = Stroke(width = stroke, cap = StrokeCap.Round)
+        style = strokeStyle
     )
 
     drawLine(Color.Black,
@@ -208,8 +258,8 @@ fun DrawScope.xorGateUI(gate: LogicGate, size: Dp = 40.dp) {
         strokeWidth = stroke)
 
     drawLine(color = Color.Black,
-        start = Offset(startX, endY),
-        end = Offset(conversionX, endY),
+        start = Offset(startX, height),
+        end = Offset(conversionX, height),
         strokeWidth = stroke)
 
     val arcWidth = (endX - conversionX)*2
@@ -219,9 +269,37 @@ fun DrawScope.xorGateUI(gate: LogicGate, size: Dp = 40.dp) {
         useCenter = false,
         topLeft = Offset(conversionX - arcWidth / 2, startY),
         size = Size(arcWidth, height),
-        style = Stroke(width = stroke, cap = StrokeCap.Round)
+        style = strokeStyle
     )
 
-    drawPins(gate.inputs.map { it.state }, inputX, startY, endY, radius = height/10)
-    drawPins(gate.outputs.map { it.state }, endX, startY, endY, radius = height/10)
+    drawPins(gate.inputs.map { it.state }, 0f, startY+gridSize, gridSize*2, radius = height/10)
+    drawPins(gate.outputs.map { it.state }, endX, height/2, radius = height/10)
+}
+
+fun DrawScope.inverterUI(gate: Inverter) {
+    val width = this.size.width
+    val height = this.size.height
+    val conversionX = width*8/10
+
+    drawLine(Color.Black, start = Offset(0f, 0f), end = Offset(0f, height), strokeWidth = stroke)
+    drawLine(Color.Black, start = Offset(0f, 0f), end = Offset(conversionX, height/2), strokeWidth = stroke)
+    drawLine(Color.Black, start = Offset(0f, height), end = Offset(conversionX, height/2), strokeWidth = stroke)
+
+    val r = (width-conversionX)/2
+    drawCircle(Color.Black, center = Offset(width-r, height/2), radius = r, style = strokeStyle)
+
+    drawPins(gate.inputs.map { it.state }, 0f, height/2, radius = height/7)
+    drawPins(gate.outputs.map { it.state }, width, height/2, radius = height/7)
+}
+
+fun DrawScope.bufferUI(gate: Buffer) {
+    val width = this.size.width
+    val height = this.size.height
+
+    drawLine(Color.Black, start = Offset(0f, 0f), end = Offset(0f, height), strokeWidth = stroke)
+    drawLine(Color.Black, start = Offset(0f, 0f), end = Offset(width, height/2), strokeWidth = stroke)
+    drawLine(Color.Black, start = Offset(0f, height), end = Offset(width, height/2), strokeWidth = stroke)
+
+    drawPins(gate.inputs.map { it.state }, 0f, height/2, radius = height/7)
+    drawPins(gate.outputs.map { it.state }, width, height/2, radius = height/7)
 }
