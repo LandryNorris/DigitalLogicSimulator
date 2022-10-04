@@ -5,9 +5,8 @@ val decomposeVersion: String by project
 
 plugins {
     kotlin("jvm")
-    id("org.jetbrains.compose") version "1.1.1"
+    id("org.jetbrains.compose") version "1.2.0-beta02"
     id("io.gitlab.arturbosch.detekt") version "1.19.0"
-    id("org.jetbrains.kotlinx.kover") version "0.5.0"
 }
 
 group = "com.landry.digital.logic.simulator.desktop"

@@ -1,7 +1,6 @@
-allprojects {
-    repositories {
-        mavenCentral()
-    }
+plugins {
+    id("org.jetbrains.dokka") version "1.6.20"
+    id("org.jetbrains.kotlinx.kover") version "0.6.0"
 }
 
 buildscript {
@@ -15,5 +14,61 @@ buildscript {
         google()
         mavenCentral()
         gradlePluginPortal()
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+        maven { url = uri("https://maven.pkg.jetbrains.space/public/p/compose/dev") }
+        maven { url = uri("https://maven.pkg.jetbrains.space/public/p/ktor/eap") }
+    }
+}
+
+tasks {
+    dokkaGfmMultiModule {
+        outputDirectory.set(rootDir.resolve("docs/generated"))
+    }
+}
+
+koverMerged {
+    enable()
+
+    filters {
+        classes {
+            includes += listOf("com.landry.*")
+            excludes += listOf("*.BuildConfig")
+        }
+        projects {
+            excludes += listOf()
+        }
+    }
+
+    htmlReport {
+        onCheck.set(true)
+        reportDir.set(File(buildDir, "test/report/html"))
+    }
+
+    xmlReport {
+        onCheck.set(true)
+        reportFile.set(File(buildDir, "test/report/xml/report.xml"))
+    }
+
+    verify {
+        onCheck.set(true)
+
+        rule {
+            isEnabled = true
+            name = "coverage"
+            target = kotlinx.kover.api.VerificationTarget.ALL
+
+            bound { // add rule bound
+                minValue = 10
+                counter = kotlinx.kover.api.CounterType.LINE // change coverage metric to evaluate (LINE, INSTRUCTION, BRANCH)
+                valueType = kotlinx.kover.api.VerificationValueType.COVERED_PERCENTAGE // change counter value (COVERED_COUNT, MISSED_COUNT, COVERED_PERCENTAGE, MISSED_PERCENTAGE)
+            }
+        }
     }
 }

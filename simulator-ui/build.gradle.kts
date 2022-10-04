@@ -1,8 +1,7 @@
 plugins {
     kotlin("multiplatform")
-    id("org.jetbrains.compose") version "1.1.1"
+    id("org.jetbrains.compose") version "1.2.0-beta02"
     id("io.gitlab.arturbosch.detekt") version "1.19.0"
-    id("org.jetbrains.kotlinx.kover") version "0.5.0"
 }
 
 group = "com.landry.digital.circuit.simulator.ui"
@@ -46,28 +45,6 @@ kotlin {
 
         val jvmMain by getting { dependsOn(composeMain) }
     }
-}
-
-tasks {
-    koverMergedHtmlReport {
-        isEnabled = true                        // false to disable report generation
-        htmlReportDir.set(layout.buildDirectory.dir("report/html-result"))
-
-        includes = listOf("com.landry.*")            // inclusion rules for classes
-    }
-
-    koverMergedXmlReport {
-        isEnabled = true                        // false to disable report generation
-        xmlReportFile.set(layout.buildDirectory.file("report/result.xml"))
-
-        includes = listOf("com.landry.*")            // inclusion rules for classes
-    }
-}
-
-kover {
-    isDisabled = false
-    coverageEngine.set(kotlinx.kover.api.CoverageEngine.INTELLIJ)
-    generateReportOnCheck = true
 }
 
 detekt {
