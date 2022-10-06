@@ -86,8 +86,6 @@ class SimulatorComponent(context: ComponentContext): SimulatorUiLogic, Component
                 val gridX = floor(position.x / it.layoutState.gridSizePx) + it.layoutState.currentX
                 val gridY = floor(position.y / it.layoutState.gridSizePx) + it.layoutState.currentY
                 currentCoordinate = Coordinate(gridX.toInt(), gridY.toInt())
-                println("Coordinate is $currentCoordinate")
-                println("Debug: ${position.x} ${it.layoutState.gridSize}, ${it.layoutState.currentX}")
                 val currentIndex = it.circuit.gates.indexOf(currentGate)
                 currentGate = it.circuit.gates[currentIndex].copy(x = gridX.toInt(), y = gridY.toInt())
                 it.copy(circuit = it.circuit.copy(gates = it.circuit.gates.mapIndexed { index, gate ->

@@ -1,13 +1,11 @@
 package com.landry.digital.logic.simulator.ui
 
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.focusable
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
