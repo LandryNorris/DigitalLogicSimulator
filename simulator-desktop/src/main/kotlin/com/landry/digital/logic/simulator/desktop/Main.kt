@@ -5,6 +5,7 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -12,6 +13,7 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.onPointerEvent
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.WindowState
@@ -38,6 +40,10 @@ fun uiMain() = singleWindowApplication(
     }.clickable(interactionSource = remember {  MutableInteractionSource() }, indication = null) {
         simulatorComponent.onClick()
     }) {
+        val density = LocalDensity.current.density
+        LaunchedEffect(density) {
+            simulatorComponent.initializeDensity(density)
+        }
         val state by simulatorComponent.state.collectAsState()
         SimulatorLayout(modifier = Modifier.fillMaxSize(), circuit = state.circuit, layoutState = state.layoutState)
     }

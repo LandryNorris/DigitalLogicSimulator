@@ -15,6 +15,7 @@ import kotlin.math.floor
 interface SimulatorUiLogic {
     val state: MutableStateFlow<SimulatorState>
 
+    fun initializeDensity(density: Float)
     fun onKeyPressed(keyEvent: KeyEvent): Boolean
     fun onPointerMove(event: PointerEvent)
     fun onClick()
@@ -60,6 +61,10 @@ class SimulatorComponent(context: ComponentContext): SimulatorUiLogic, Component
         return false
     }
 
+    override fun initializeDensity(density: Float) {
+        state.update { it.copy(layoutState = it.layoutState.copy(density = density)) }
+    }
+
     private fun addWire() {
         val wire = Wire()
         currentWire = wire
@@ -75,14 +80,15 @@ class SimulatorComponent(context: ComponentContext): SimulatorUiLogic, Component
     }
 
     override fun onPointerMove(event: PointerEvent) {
-        val position = event.changes.first().position
-        val gridX = floor(position.x.dp / state.value.layoutState.gridSize) + state.value.layoutState.currentX
-        val gridY = floor(position.y.dp / state.value.layoutState.gridSize) + state.value.layoutState.currentY
-        currentCoordinate = Coordinate(gridX.toInt(), gridY.toInt())
-
         if(currentGate != null) {
-            val currentIndex = state.value.circuit.gates.indexOf(currentGate)
             state.update {
+                val position = event.changes.first().position
+                val gridX = floor(position.x / it.layoutState.gridSizePx) + it.layoutState.currentX
+                val gridY = floor(position.y / it.layoutState.gridSizePx) + it.layoutState.currentY
+                currentCoordinate = Coordinate(gridX.toInt(), gridY.toInt())
+                println("Coordinate is $currentCoordinate")
+                println("Debug: ${position.x} ${it.layoutState.gridSize}, ${it.layoutState.currentX}")
+                val currentIndex = it.circuit.gates.indexOf(currentGate)
                 currentGate = it.circuit.gates[currentIndex].copy(x = gridX.toInt(), y = gridY.toInt())
                 it.copy(circuit = it.circuit.copy(gates = it.circuit.gates.mapIndexed { index, gate ->
                     if (index == currentIndex) currentGate!!
@@ -117,4 +123,4 @@ fun <T> List<T>.copyAndSet(index: Int, value: T): List<T> {
 }
 
 data class SimulatorState(val circuit: CircuitUI = CircuitUI(),
-                          val layoutState: SimulatorLayoutState = SimulatorLayoutState())
+                          val layoutState: SimulatorLayoutState = SimulatorLayoutState(density = 1.0f))

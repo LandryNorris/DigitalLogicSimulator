@@ -7,14 +7,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
-data class SimulatorLayoutState(val currentX: Double = 0.0, val currentY: Double = 0.0, val gridSize: Dp = 10.dp)
+data class SimulatorLayoutState(val currentX: Double = 0.0, val currentY: Double = 0.0,
+                                val gridSize: Dp = 10.dp, val density: Float)
+
+val SimulatorLayoutState.gridSizePx get() = gridSize.value * density
 
 @Composable
 fun SimulatorLayout(modifier: Modifier = Modifier,
-                    layoutState: SimulatorLayoutState = SimulatorLayoutState(),
+                    layoutState: SimulatorLayoutState =
+                        SimulatorLayoutState(density = 1f),
                     circuit: CircuitUI) {
     Canvas(modifier) {
         drawGrid(layoutState, Color(red = 0, green = 0, blue = 0, alpha = 0x90))

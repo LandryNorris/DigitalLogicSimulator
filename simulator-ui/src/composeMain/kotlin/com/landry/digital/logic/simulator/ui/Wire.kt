@@ -14,7 +14,7 @@ data class Wire(val coordinates: List<Coordinate> = listOf(),
 
 operator fun Wire.plus(coordinate: Coordinate) = Wire(coordinates + coordinate)
 
-class Coordinate(val x: Int, val y: Int)
+data class Coordinate(val x: Int, val y: Int)
 
 @Composable
 fun Wire.draw(gridSize: Dp) {
