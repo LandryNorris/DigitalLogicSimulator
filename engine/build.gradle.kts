@@ -1,6 +1,7 @@
 plugins {
     kotlin("multiplatform")
     id("io.gitlab.arturbosch.detekt") version "1.19.0"
+    id("org.jetbrains.kotlinx.kover")
 }
 
 group = "com.landry.digital.circuit.simulator.engine"

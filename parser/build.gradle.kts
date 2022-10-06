@@ -1,5 +1,6 @@
 plugins {
     kotlin("multiplatform")
+    id("org.jetbrains.kotlinx.kover")
     id("io.gitlab.arturbosch.detekt") version "1.19.0"
 }
 
