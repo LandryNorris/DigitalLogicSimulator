@@ -119,7 +119,6 @@ fun DrawScope.orGateUI(gate: LogicGate) {
 
     val startX = 0f
     val startY = 0f
-    val endX = width*9/10
     val conversionX = width/2
 
     val orArcWidth = width/5
@@ -142,7 +141,7 @@ fun DrawScope.orGateUI(gate: LogicGate) {
         end = Offset(conversionX, height),
         strokeWidth = stroke)
 
-    val arcWidth = (endX - conversionX)*2
+    val arcWidth = (width - conversionX) * 2
     drawArc(color = Color.Black,
         startAngle = -90f,
         sweepAngle = 180f,
@@ -153,7 +152,7 @@ fun DrawScope.orGateUI(gate: LogicGate) {
     )
 
     drawPins(gate.inputs.map { it.state }, startX, startY+gridSize, gridSize*2, radius = height/10)
-    drawPins(gate.outputs.map { it.state }, endX, height/2, radius = height/10)
+    drawPins(gate.outputs.map { it.state }, width, height / 2, radius = height / 10)
 }
 
 fun DrawScope.norGateUI(gate: NorGate) {
@@ -212,7 +211,6 @@ fun DrawScope.xorGateUI(gate: LogicGate) {
 
     val startX = width/6f
     val startY = 0f
-    val endX = width*9/10
     val conversionX = width/2
 
     val orArcWidth = width/5
@@ -244,7 +242,7 @@ fun DrawScope.xorGateUI(gate: LogicGate) {
         end = Offset(conversionX, height),
         strokeWidth = stroke)
 
-    val arcWidth = (endX - conversionX)*2
+    val arcWidth = (width - conversionX) * 2
     drawArc(color = Color.Black,
         startAngle = -90f,
         sweepAngle = 180f,
@@ -255,7 +253,7 @@ fun DrawScope.xorGateUI(gate: LogicGate) {
     )
 
     drawPins(gate.inputs.map { it.state }, 0f, startY+gridSize, gridSize*2, radius = height/10)
-    drawPins(gate.outputs.map { it.state }, endX, height/2, radius = height/10)
+    drawPins(gate.outputs.map { it.state }, width, height / 2, radius = height / 10)
 }
 
 fun DrawScope.inverterUI(gate: Inverter) {
