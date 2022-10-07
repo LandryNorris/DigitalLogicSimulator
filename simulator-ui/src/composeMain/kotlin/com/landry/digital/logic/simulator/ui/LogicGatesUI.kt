@@ -17,7 +17,7 @@ import androidx.compose.ui.input.pointer.onPointerEvent
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.landry.digital.engine.component.*
-import com.landry.digital.logic.simulator.ui.gates.twoInOneOut2x2Click
+import com.landry.digital.logic.simulator.ui.gates.twoInOneOut4x4Click
 import com.landry.digital.logic.simulator.ui.gates.andGateUI
 
 const val stroke = 2f
@@ -49,7 +49,7 @@ fun Gate.draw(gridSize: Dp = 10.dp,
             .offset((gridSize*x), (gridSize*y))
             .onPointerEvent(PointerEventType.Press) {
                 when(gate) {
-                    is AndGate -> twoInOneOut2x2Click(it, gridSize.roundToPx(), onInputClicked, onOutputClicked)
+                    is AndGate -> twoInOneOut4x4Click(it, gridSize.roundToPx(), onInputClicked, onOutputClicked)
                 }
             }) {
         when(gate) {
