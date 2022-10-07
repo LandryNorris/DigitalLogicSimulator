@@ -5,7 +5,6 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.input.pointer.PointerEvent
-import androidx.compose.ui.unit.Dp
 import com.landry.digital.engine.component.AndGate
 import com.landry.digital.logic.simulator.ui.drawPins
 import com.landry.digital.logic.simulator.ui.stroke
@@ -75,4 +74,9 @@ fun andGateClick(pointerEvent: PointerEvent,
         y += gridSize*2
         i++
     }
+
+    val outputY = h/2
+
+    val d2 = (position.x - w) * (position.x - w) + (position.y - outputY)*(position.y - outputY)
+    if(d2 < r*r) onOutputClicked(i)
 }
