@@ -24,7 +24,7 @@ fun SimulatorLayout(modifier: Modifier = Modifier,
     }
 
     for(gate in circuit.gates) {
-        gate.draw(layoutState.gridSize)
+        gate.draw(layoutState.gridSize, onInputClicked = { println("Clicked input $it") })
     }
 
     for(wire in circuit.wires) {
