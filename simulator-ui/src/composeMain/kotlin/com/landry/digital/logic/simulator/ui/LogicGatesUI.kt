@@ -50,7 +50,6 @@ fun Gate.draw(gridSize: Dp = 10.dp,
         modifier = Modifier
             .width(gridSize*size.first)
             .height(gridSize*size.second)
-            .background(Color.Blue)
             .offset((gridSize*x), (gridSize*y))
             .onPointerEvent(PointerEventType.Press) {
                 when(gate) {
