@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import com.landry.digital.engine.component.*
 import com.landry.digital.logic.simulator.ui.gates.twoInOneOut4x4Click
 import com.landry.digital.logic.simulator.ui.gates.andGateUI
+import com.landry.digital.logic.simulator.ui.gates.oneInOneOut4x2Click
 
 const val stroke = 2f
 private val onColor = Color(0x32, 0xCD, 0x32)
@@ -54,6 +55,9 @@ fun Gate.draw(gridSize: Dp = 10.dp,
                     is XorGate,
                     is NorGate,
                     is NandGate -> twoInOneOut4x4Click(it, gridSize.roundToPx(), onInputClicked, onOutputClicked)
+
+                    is Buffer,
+                    is Inverter -> oneInOneOut4x2Click(it, gridSize.roundToPx(), onInputClicked, onOutputClicked)
                 }
             }) {
         when(gate) {
