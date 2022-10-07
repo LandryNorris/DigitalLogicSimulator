@@ -1,12 +1,9 @@
 package com.landry.digital.logic.simulator.ui
 
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.onClick
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -17,11 +14,10 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.onPointerEvent
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.landry.digital.engine.component.*
-import com.landry.digital.logic.simulator.ui.gates.andGateClick
+import com.landry.digital.logic.simulator.ui.gates.twoInOneOut2x2Click
 import com.landry.digital.logic.simulator.ui.gates.andGateUI
 
 const val stroke = 2f
@@ -53,7 +49,7 @@ fun Gate.draw(gridSize: Dp = 10.dp,
             .offset((gridSize*x), (gridSize*y))
             .onPointerEvent(PointerEventType.Press) {
                 when(gate) {
-                    is AndGate -> andGateClick(it, gridSize.roundToPx(), onInputClicked, onOutputClicked)
+                    is AndGate -> twoInOneOut2x2Click(it, gridSize.roundToPx(), onInputClicked, onOutputClicked)
                 }
             }) {
         when(gate) {

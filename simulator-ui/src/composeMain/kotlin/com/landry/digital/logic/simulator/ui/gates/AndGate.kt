@@ -53,10 +53,10 @@ fun DrawScope.andGateUI(gate: AndGate) {
     drawPins(gate.outputs.map { it.state }, width, height / 2, radius = height / 10)
 }
 
-fun andGateClick(pointerEvent: PointerEvent,
-                         gridSize: Int,
-                         onInputClicked: (Int) -> Unit = {},
-                         onOutputClicked: (Int) -> Unit = {}) {
+fun twoInOneOut2x2Click(pointerEvent: PointerEvent,
+                        gridSize: Int,
+                        onInputClicked: (Int) -> Unit = {},
+                        onOutputClicked: (Int) -> Unit = {}) {
     val position = pointerEvent.changes.first().position
     val w = 4 * gridSize
     val h = 4 * gridSize
