@@ -49,7 +49,11 @@ fun Gate.draw(gridSize: Dp = 10.dp,
             .offset((gridSize*x), (gridSize*y))
             .onPointerEvent(PointerEventType.Press) {
                 when(gate) {
-                    is AndGate -> twoInOneOut4x4Click(it, gridSize.roundToPx(), onInputClicked, onOutputClicked)
+                    is AndGate,
+                    is OrGate,
+                    is XorGate,
+                    is NorGate,
+                    is NandGate -> twoInOneOut4x4Click(it, gridSize.roundToPx(), onInputClicked, onOutputClicked)
                 }
             }) {
         when(gate) {
