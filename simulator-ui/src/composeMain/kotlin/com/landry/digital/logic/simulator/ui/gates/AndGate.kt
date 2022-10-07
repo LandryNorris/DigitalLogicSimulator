@@ -57,7 +57,6 @@ fun andGateClick(pointerEvent: PointerEvent,
                          gridSize: Int,
                          onInputClicked: (Int) -> Unit = {},
                          onOutputClicked: (Int) -> Unit = {}) {
-    println("Pointer event is $pointerEvent")
     val position = pointerEvent.changes.first().position
     val w = 4 * gridSize
     val h = 4 * gridSize
@@ -78,5 +77,5 @@ fun andGateClick(pointerEvent: PointerEvent,
     val outputY = h/2
 
     val d2 = (position.x - w) * (position.x - w) + (position.y - outputY)*(position.y - outputY)
-    if(d2 < r*r) onOutputClicked(i)
+    if(d2 < r*r) onOutputClicked(0)
 }
