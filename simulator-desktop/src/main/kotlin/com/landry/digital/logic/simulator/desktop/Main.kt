@@ -45,7 +45,10 @@ fun uiMain() = singleWindowApplication(
             simulatorComponent.initializeDensity(density)
         }
         val state by simulatorComponent.state.collectAsState()
-        SimulatorLayout(modifier = Modifier.fillMaxSize(), circuit = state.circuit, layoutState = state.layoutState)
+        SimulatorLayout(modifier = Modifier.fillMaxSize(),
+            circuit = state.circuit,
+            layoutState = state.layoutState,
+            onGatePinClicked = simulatorComponent::onGatePinClicked)
     }
 }
 

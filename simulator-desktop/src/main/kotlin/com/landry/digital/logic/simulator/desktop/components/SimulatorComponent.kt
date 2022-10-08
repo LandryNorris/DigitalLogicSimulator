@@ -18,6 +18,7 @@ interface SimulatorUiLogic {
     fun initializeDensity(density: Float)
     fun onKeyPressed(keyEvent: KeyEvent): Boolean
     fun onPointerMove(event: PointerEvent)
+    fun onGatePinClicked(gate: Gate, pin: Pin)
     fun onClick()
 }
 
@@ -65,8 +66,8 @@ class SimulatorComponent(context: ComponentContext): SimulatorUiLogic, Component
         state.update { it.copy(layoutState = it.layoutState.copy(density = density)) }
     }
 
-    private fun addWire() {
-        val wire = Wire()
+    private fun addWire(vararg coordinates: Coordinate) {
+        val wire = Wire(coordinates = coordinates.toList())
         currentWire = wire
         state.update {
             it.copy(circuit = it.circuit + wire)
@@ -79,21 +80,48 @@ class SimulatorComponent(context: ComponentContext): SimulatorUiLogic, Component
         println("Gate count is now ${state.value.circuit.gates.size}")
     }
 
-    override fun onPointerMove(event: PointerEvent) {
-        if(currentGate != null) {
-            state.update {
-                val position = event.changes.first().position
-                val gridX = floor(position.x / it.layoutState.gridSizePx) + it.layoutState.currentX
-                val gridY = floor(position.y / it.layoutState.gridSizePx) + it.layoutState.currentY
-                currentCoordinate = Coordinate(gridX.toInt(), gridY.toInt())
-                val currentIndex = it.circuit.gates.indexOf(currentGate)
-                currentGate = it.circuit.gates[currentIndex].copy(x = gridX.toInt(), y = gridY.toInt())
-                it.copy(circuit = it.circuit.copy(gates = it.circuit.gates.mapIndexed { index, gate ->
-                    if (index == currentIndex) currentGate!!
-                    else gate
-                }))
-            }
+    override fun onGatePinClicked(gate: Gate, pin: Pin) {
+        println("Clicked pin $pin on $gate")
+        val wire = currentWire
+        if(wire == null) {
+            addWire()
+            currentCoordinate?.let { addCoordinate(it) }
+            currentCoordinate?.let { addCoordinate(it) }
+        } else {
+            currentCoordinate?.let { addCoordinate(it) }
+            currentCoordinate?.let { addCoordinate(it) }
+            currentWire = null
         }
+    }
+
+    override fun onPointerMove(event: PointerEvent) = state.update {
+        val gate = currentGate
+        val wire = currentWire
+        val position = event.changes.first().position
+        val gridX = floor(position.x / it.layoutState.gridSizePx) + it.layoutState.currentX
+        val gridY = floor(position.y / it.layoutState.gridSizePx) + it.layoutState.currentY
+        currentCoordinate = Coordinate(gridX.toInt(), gridY.toInt())
+
+        if(gate != null) {
+            val currentIndex = it.circuit.gates.indexOf(gate)
+            currentGate = gate.copy(x = gridX.toInt(), y = gridY.toInt())
+            it.copy(circuit = it.circuit.copy(gates = it.circuit.gates.mapIndexed { index, gate ->
+                if (index == currentIndex) currentGate!!
+                else gate
+            }))
+        }
+        else if(wire != null) {
+            val currentIndex = it.circuit.wires.indexOf(currentWire)
+            currentWire = wire.copy(wire.coordinates.mapIndexed { index, coordinate ->
+                if(index == wire.coordinates.lastIndex) Coordinate(gridX.toInt(), gridY.toInt())
+                else coordinate
+            })
+            it.copy(circuit = it.circuit.copy(wires = it.circuit.wires.mapIndexed { index, wire ->
+                if(index == currentIndex) currentWire!!
+                else wire
+            }))
+        }
+        else it.copy()
     }
 
     override fun onClick() {

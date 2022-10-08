@@ -8,9 +8,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.landry.digital.engine.component.Pin
 
 data class SimulatorLayoutState(val currentX: Double = 0.0, val currentY: Double = 0.0,
-                                val gridSize: Dp = 10.dp, val density: Float)
+                                val gridSize: Dp = 20.dp, val density: Float)
 
 val SimulatorLayoutState.gridSizePx get() = gridSize.value * density
 
@@ -18,13 +19,16 @@ val SimulatorLayoutState.gridSizePx get() = gridSize.value * density
 fun SimulatorLayout(modifier: Modifier = Modifier,
                     layoutState: SimulatorLayoutState =
                         SimulatorLayoutState(density = 1f),
-                    circuit: CircuitUI) {
+                    circuit: CircuitUI,
+                    onGatePinClicked: (Gate, Pin) -> Unit = { _, _ -> }) {
     Canvas(modifier) {
         drawGrid(layoutState, Color(red = 0, green = 0, blue = 0, alpha = 0x90))
     }
 
     for(gate in circuit.gates) {
-        gate.draw(layoutState.gridSize, onInputClicked = { println("Clicked input $it") }, onOutputClicked = { println("Clicked output $it") })
+        gate.draw(layoutState.gridSize,
+            onInputClicked = { onGatePinClicked(gate, gate.gate.inputs[it]) },
+            onOutputClicked = { onGatePinClicked(gate, gate.gate.outputs[it]) })
     }
 
     for(wire in circuit.wires) {
