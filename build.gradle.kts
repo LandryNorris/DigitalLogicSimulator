@@ -1,13 +1,16 @@
 plugins {
-    id("org.jetbrains.dokka") version "1.6.20"
+    id("org.jetbrains.dokka") version "1.9.20"
     id("org.jetbrains.kotlinx.kover") version "0.6.0"
+    kotlin("plugin.compose") version "2.0.0" apply false
+    id("org.jetbrains.compose") version "1.6.10" apply false
+    id("io.gitlab.arturbosch.detekt") version "1.23.6" apply false
 }
 
 buildscript {
     val kotlinVersion: String by project
     dependencies {
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
-        classpath("com.android.tools.build:gradle:7.0.0")
+        classpath("com.android.tools.build:gradle:8.5.0")
     }
 
     repositories {

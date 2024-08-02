@@ -1,7 +1,7 @@
 plugins {
     kotlin("multiplatform")
     id("org.jetbrains.kotlinx.kover")
-    id("io.gitlab.arturbosch.detekt") version "1.19.0"
+    id("io.gitlab.arturbosch.detekt")
 }
 
 group = "com.landry.digital.circuit.simulator.parser"
@@ -19,14 +19,14 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation(project(":engine"))
-                implementation("com.squareup.okio:okio:3.1.0")
+                implementation("com.squareup.okio:okio:3.9.0")
             }
         }
 
         val commonTest by getting {
             dependencies {
                 implementation(kotlin("test"))
-                implementation("com.squareup.okio:okio-fakefilesystem:3.1.0")
+                implementation("com.squareup.okio:okio-fakefilesystem:3.9.0")
             }
         }
     }
