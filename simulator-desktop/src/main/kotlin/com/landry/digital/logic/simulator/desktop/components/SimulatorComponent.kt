@@ -27,9 +27,7 @@ class SimulatorComponent(context: ComponentContext): SimulatorUiLogic, Component
     private var currentWire: Wire? = null
     private var currentCoordinate: Coordinate? = null
 
-    @OptIn(ExperimentalComposeUiApi::class)
     override fun onKeyPressed(keyEvent: KeyEvent): Boolean {
-
         if(keyEvent.type == KeyEventType.KeyUp) {
             when(keyEvent.key) {
                 Key.A ->
@@ -50,14 +48,12 @@ class SimulatorComponent(context: ComponentContext): SimulatorUiLogic, Component
                     }
                     if(currentWire != null) {
                         currentWire = null
-                        state.update {
-                            it.copy(circuit = it.circuit.copy(wires = it.circuit.wires.dropLast(1)))
-                        }
                     }
                 }
                 Key.W -> addWire()
             }
         }
+
         return false
     }
 
@@ -68,12 +64,14 @@ class SimulatorComponent(context: ComponentContext): SimulatorUiLogic, Component
     private fun addWire() {
         val wire = Wire()
         currentWire = wire
+        currentGate = null
         state.update {
             it.copy(circuit = it.circuit + wire)
         }
     }
 
     private fun addGate(gate: LogicGate) {
+        currentWire = null
         currentGate = Gate(gate)
         state.update { it.copy(circuit = it.circuit + currentGate!!) }
         println("Gate count is now ${state.value.circuit.gates.size}")
@@ -93,6 +91,13 @@ class SimulatorComponent(context: ComponentContext): SimulatorUiLogic, Component
                     else gate
                 }))
             }
+        } else {
+            val currentState = state.value
+            val currentLayoutState = currentState.layoutState
+            val position = event.changes.first().position
+            val gridX = floor(position.x / currentLayoutState.gridSizePx) + currentLayoutState.currentX
+            val gridY = floor(position.y / currentLayoutState.gridSizePx) + currentLayoutState.currentY
+            currentCoordinate = Coordinate(gridX.toInt(), gridY.toInt())
         }
     }
 

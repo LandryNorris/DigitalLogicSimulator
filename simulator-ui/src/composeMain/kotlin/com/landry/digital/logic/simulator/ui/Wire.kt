@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
@@ -19,9 +20,7 @@ data class Coordinate(val x: Int, val y: Int)
 @Composable
 fun Wire.draw(gridSize: Dp) {
     if(coordinates.isEmpty()) return
-    val startX = coordinates.minOf { it.x }
-    val startY = coordinates.minOf { it.y }
-    Canvas(modifier = androidx.compose.ui.Modifier.width(gridSize*width()).height(gridSize*height())) {
+    Canvas(modifier = Modifier.width(gridSize*width()).height(gridSize*height())) {
         coordinates.windowed(size = 2) {
             val x1 = it.first().x * gridSize.roundToPx()
             val y1 = it.first().y * gridSize.roundToPx()
