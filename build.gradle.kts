@@ -3,6 +3,7 @@ plugins {
     id("org.jetbrains.kotlinx.kover") version "0.6.0"
     kotlin("plugin.compose") version "2.0.0" apply false
     id("org.jetbrains.compose") version "1.6.10" apply false
+    id("io.gitlab.arturbosch.detekt") version "1.23.6" apply false
 }
 
 buildscript {
