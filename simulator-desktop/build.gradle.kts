@@ -5,8 +5,9 @@ val decomposeVersion: String by project
 
 plugins {
     kotlin("jvm")
-    id("org.jetbrains.compose") version "1.2.0-beta03"
-    id("io.gitlab.arturbosch.detekt") version "1.19.0"
+    kotlin("plugin.compose")
+    id("org.jetbrains.compose")
+    id("io.gitlab.arturbosch.detekt") version "1.23.0"
     id("org.jetbrains.kotlinx.kover")
 }
 
@@ -24,7 +25,7 @@ dependencies {
     implementation(project(":simulator-ui"))
     implementation(project(":engine"))
     implementation("com.arkivanov.decompose:decompose:$decomposeVersion")
-    implementation("com.arkivanov.decompose:extensions-compose-jetbrains:$decomposeVersion")
+    implementation("com.arkivanov.decompose:extensions-compose:$decomposeVersion")
 }
 
 tasks.withType<KotlinCompile> {
