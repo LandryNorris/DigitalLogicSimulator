@@ -47,6 +47,7 @@ class BinaryWriter(private val fileSystem: FileSystem) {
         }
     }
 
+    @Suppress("MagicNumber")
     private fun LogicGate.classId() = when(this) {
         is AndGate -> 1
         is OrGate -> 2
