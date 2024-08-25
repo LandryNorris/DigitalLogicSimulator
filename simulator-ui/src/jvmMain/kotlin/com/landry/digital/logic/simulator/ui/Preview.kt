@@ -7,11 +7,15 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.unit.dp
 import com.landry.digital.engine.component.AndGate
 import com.landry.digital.engine.component.LogicGate
 import com.landry.digital.engine.component.OrGate
 import com.landry.digital.engine.component.XorGate
+import com.landry.digital.engine.ui.GateUIProperties
+import com.landry.digital.engine.ui.Position
+import com.landry.digital.engine.ui.getUIState
 
 @Composable
 @Preview
@@ -20,7 +24,11 @@ fun AndGatePreview() {
     gate.input1.state = false
     gate.input1.state = true
     gate.output.state = false
-    Gate(gate).draw()
+
+    gate.gateProperties = GateUIProperties(
+        Position(1, 1),
+        com.landry.digital.engine.ui.Size(4, 4))
+    gate.getUIState()?.draw()
 }
 
 @Composable
@@ -30,7 +38,11 @@ fun OrGatePreview() {
     gate.input1.state = false
     gate.input1.state = true
     gate.output.state = true
-    Gate(gate).draw()
+
+    gate.gateProperties = GateUIProperties(
+        Position(1, 1),
+        com.landry.digital.engine.ui.Size(4, 4))
+    gate.getUIState()?.draw()
 }
 
 @Composable
@@ -40,7 +52,11 @@ fun XorGatePreview() {
     gate.input1.state = false
     gate.input1.state = true
     gate.output.state = true
-    Gate(gate).draw()
+
+    gate.gateProperties = GateUIProperties(
+        Position(1, 1),
+        com.landry.digital.engine.ui.Size(4, 4))
+    gate.getUIState()?.draw()
 }
 
 @Composable

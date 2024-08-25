@@ -15,6 +15,10 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.landry.digital.engine.component.*
+import com.landry.digital.engine.ui.GateUIProperties
+import com.landry.digital.engine.ui.GateUIState
+import com.landry.digital.engine.ui.PinUIState
+import com.landry.digital.engine.ui.Position
 
 private const val stroke = 2f
 private val onColor = Color(0x32, 0xCD, 0x32)
@@ -32,27 +36,40 @@ fun DrawScope.drawPins(values: List<Boolean>, x: Float, startY: Float, spacing: 
     }
 }
 
+fun DrawScope.drawPins(gatePosition: Position, gridSize: Float, pins: List<PinUIState>, radius: Float) {
+    for(pin in pins) {
+        val x = pin.position.x - gatePosition.x
+        val y = pin.position.y - gatePosition.y
+        val color = if(pin.state) onColor else offColor
+        drawCircle(color = color, radius = radius, style = strokeStyle,
+            center = Offset(gridSize*x, gridSize*y))
+    }
+}
+
 @Composable
-fun Gate.draw(gridSize: Dp = 10.dp) {
-    val size = size()
-    Canvas(modifier = Modifier.width(gridSize*size.first).height(gridSize*size.second)
-        .offset((gridSize*x), (gridSize*y))) {
-        when(gate) {
-            is AndGate -> andGateUI(gate)
-            is NandGate -> nandGateUI(gate)
-            is XorGate -> xorGateUI(gate)
-            is OrGate -> orGateUI(gate)
-            is NorGate -> norGateUI(gate)
-            is Inverter -> inverterUI(gate)
-            is Buffer -> bufferUI(gate)
+fun GateUIState.draw(gridSize: Dp = 10.dp) {
+    val gate = this
+    val size = gateSize
+    val position = gatePosition
+
+    Canvas(modifier = Modifier.width(gridSize*size.width).height(gridSize*size.height)
+        .offset((gridSize*position.x), (gridSize*position.y))) {
+        when(type) {
+            AndGate::class -> andGateUI(gate)
+            NandGate::class -> nandGateUI(gate)
+            XorGate::class -> xorGateUI(gate)
+            OrGate::class -> orGateUI(gate)
+            NorGate::class -> norGateUI(gate)
+            Inverter::class -> inverterUI(gate)
+            Buffer::class -> bufferUI(gate)
         }
     }
 }
 
-fun DrawScope.andGateUI(gate: AndGate) {
+fun DrawScope.andGateUI(gate: GateUIState) {
     val width = this.size.width
     val height = this.size.height
-    val gridSize = height/4
+    val gridSize = height/gate.gateSize.height
 
     val startX = 0f
     val startY = 0f
@@ -83,14 +100,14 @@ fun DrawScope.andGateUI(gate: AndGate) {
         style = strokeStyle
     )
 
-    drawPins(gate.inputs.map { it.state }, startX, startY + gridSize, gridSize*2, radius = height/10)
-    drawPins(gate.outputs.map { it.state }, width, height / 2, radius = height / 10)
+    drawPins(gate.gatePosition, gridSize, gate.inputPins, radius = height/10)
+    drawPins(gate.gatePosition, gridSize, gate.outputPins, radius = height / 10)
 }
 
-fun DrawScope.nandGateUI(gate: NandGate) {
+fun DrawScope.nandGateUI(gate: GateUIState) {
     val width = this.size.width
     val height = this.size.height
-    val gridSize = height/4
+    val gridSize = height/gate.gateSize.height
 
     val startX = 0f
     val startY = 0f
@@ -127,14 +144,14 @@ fun DrawScope.nandGateUI(gate: NandGate) {
         style = Stroke(width = stroke)
     )
 
-    drawPins(gate.inputs.map { it.state }, startX, startY+gridSize, gridSize*2, radius = height/10)
-    drawPins(gate.outputs.map { it.state }, width, height / 2, radius = height / 10)
+    drawPins(gate.gatePosition, gridSize, gate.inputPins, radius = height/10)
+    drawPins(gate.gatePosition, gridSize, gate.outputPins, radius = height / 10)
 }
 
-fun DrawScope.orGateUI(gate: LogicGate) {
+fun DrawScope.orGateUI(gate: GateUIState) {
     val width = this.size.width
     val height = this.size.height
-    val gridSize = height/4
+    val gridSize = height/gate.gateSize.height
 
     val startX = 0f
     val startY = 0f
@@ -171,14 +188,14 @@ fun DrawScope.orGateUI(gate: LogicGate) {
         style = strokeStyle
     )
 
-    drawPins(gate.inputs.map { it.state }, startX, startY+gridSize, gridSize*2, radius = height/10)
-    drawPins(gate.outputs.map { it.state }, endX, height/2, radius = height/10)
+    drawPins(gate.gatePosition, gridSize, gate.inputPins, radius = height/10)
+    drawPins(gate.gatePosition, gridSize, gate.outputPins, radius = height/10)
 }
 
-fun DrawScope.norGateUI(gate: NorGate) {
+fun DrawScope.norGateUI(gate: GateUIState) {
     val width = this.size.width
     val height = this.size.height
-    val gridSize = height/4
+    val gridSize = height/gate.gateSize.height
 
     val startX = 0f
     val startY = 0f
@@ -220,14 +237,14 @@ fun DrawScope.norGateUI(gate: NorGate) {
         style = Stroke(width = stroke)
     )
 
-    drawPins(gate.inputs.map { it.state }, startX, startY+gridSize, gridSize*2, radius = height/10)
-    drawPins(gate.outputs.map { it.state }, width, height / 2, radius = height / 10)
+    drawPins(gate.gatePosition, gridSize, gate.inputPins, radius = height/10)
+    drawPins(gate.gatePosition, gridSize, gate.outputPins, radius = height / 10)
 }
 
-fun DrawScope.xorGateUI(gate: LogicGate) {
+fun DrawScope.xorGateUI(gate: GateUIState) {
     val width = this.size.width
     val height = this.size.height
-    val gridSize = height/4
+    val gridSize = height/gate.gateSize.height
 
     val startX = width/6f
     val startY = 0f
@@ -273,14 +290,15 @@ fun DrawScope.xorGateUI(gate: LogicGate) {
         style = strokeStyle
     )
 
-    drawPins(gate.inputs.map { it.state }, 0f, startY+gridSize, gridSize*2, radius = height/10)
-    drawPins(gate.outputs.map { it.state }, endX, height/2, radius = height/10)
+    drawPins(gate.gatePosition, gridSize, gate.inputPins, radius = height/10)
+    drawPins(gate.gatePosition, gridSize, gate.outputPins, radius = height/10)
 }
 
-fun DrawScope.inverterUI(gate: Inverter) {
+fun DrawScope.inverterUI(gate: GateUIState) {
     val width = this.size.width
     val height = this.size.height
     val conversionX = width*8/10
+    val gridSize = height/gate.gateSize.height
 
     drawLine(Color.Black, start = Offset(0f, 0f), end = Offset(0f, height), strokeWidth = stroke)
     drawLine(Color.Black, start = Offset(0f, 0f), end = Offset(conversionX, height/2), strokeWidth = stroke)
@@ -289,18 +307,19 @@ fun DrawScope.inverterUI(gate: Inverter) {
     val r = (width-conversionX)/2
     drawCircle(Color.Black, center = Offset(width-r, height/2), radius = r, style = strokeStyle)
 
-    drawPins(gate.inputs.map { it.state }, 0f, height/2, radius = height/7)
-    drawPins(gate.outputs.map { it.state }, width, height/2, radius = height/7)
+    drawPins(gate.gatePosition, gridSize, gate.inputPins, radius = height/5)
+    drawPins(gate.gatePosition, gridSize, gate.outputPins, radius = height/5)
 }
 
-fun DrawScope.bufferUI(gate: Buffer) {
+fun DrawScope.bufferUI(gate: GateUIState) {
     val width = this.size.width
     val height = this.size.height
+    val gridSize = height/gate.gateSize.height
 
     drawLine(Color.Black, start = Offset(0f, 0f), end = Offset(0f, height), strokeWidth = stroke)
     drawLine(Color.Black, start = Offset(0f, 0f), end = Offset(width, height/2), strokeWidth = stroke)
     drawLine(Color.Black, start = Offset(0f, height), end = Offset(width, height/2), strokeWidth = stroke)
 
-    drawPins(gate.inputs.map { it.state }, 0f, height/2, radius = height/7)
-    drawPins(gate.outputs.map { it.state }, width, height/2, radius = height/7)
+    drawPins(gate.gatePosition, gridSize, gate.inputPins, radius = height/5)
+    drawPins(gate.gatePosition, gridSize, gate.outputPins, radius = height/5)
 }

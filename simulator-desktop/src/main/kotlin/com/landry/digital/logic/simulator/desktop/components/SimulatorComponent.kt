@@ -6,6 +6,7 @@ import androidx.compose.ui.input.pointer.PointerEvent
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.ComponentContext
 import com.landry.digital.engine.component.*
+import com.landry.digital.engine.ui.*
 import com.landry.digital.logic.simulator.ui.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
@@ -23,22 +24,23 @@ interface SimulatorUiLogic {
 
 class SimulatorComponent(context: ComponentContext): SimulatorUiLogic, ComponentContext by context {
     override val state = MutableStateFlow(SimulatorState())
-    private var currentGate: Gate? = null
-    private var currentWire: Wire? = null
+    private var currentGate: LogicGate? = null
+    private var currentWire: WireUIState? = null
     private var currentCoordinate: Coordinate? = null
+    private val simulator = UISimulator()
 
     override fun onKeyPressed(keyEvent: KeyEvent): Boolean {
         if(keyEvent.type == KeyEventType.KeyUp) {
             when(keyEvent.key) {
                 Key.A ->
-                    if(keyEvent.isShiftPressed) addGate(NandGate())
-                    else addGate(AndGate())
+                    if(keyEvent.isShiftPressed) addGate(NandGate(), NandGate.defaultSize)
+                    else addGate(AndGate(), AndGate.defaultSize)
                 Key.O ->
-                    if(keyEvent.isShiftPressed) addGate(NorGate())
-                    else addGate(OrGate())
-                Key.X -> addGate(XorGate())
-                Key.I -> addGate(Inverter())
-                Key.B -> addGate(Buffer())
+                    if(keyEvent.isShiftPressed) addGate(NorGate(), NandGate.defaultSize)
+                    else addGate(OrGate(), OrGate.defaultSize)
+                Key.X -> addGate(XorGate(), XorGate.defaultSize)
+                Key.I -> addGate(Inverter(), Inverter.defaultSize)
+                Key.B -> addGate(Buffer(), Buffer.defaultSize)
                 Key.Escape -> {
                     if(currentGate != null) {
                         currentGate = null
@@ -62,18 +64,23 @@ class SimulatorComponent(context: ComponentContext): SimulatorUiLogic, Component
     }
 
     private fun addWire() {
-        val wire = Wire()
+        val wire = WireUIState(listOf(), false)
         currentWire = wire
         currentGate = null
+        simulator += wire
         state.update {
-            it.copy(circuit = it.circuit + wire)
+            it.copy(circuit = simulator.getUIState())
         }
     }
 
-    private fun addGate(gate: LogicGate) {
+    private fun addGate(gate: LogicGate, size: Size) {
         currentWire = null
-        currentGate = Gate(gate)
-        state.update { it.copy(circuit = it.circuit + currentGate!!) }
+        currentGate = gate
+
+        gate.gateProperties = GateUIProperties(position = Position(0, 0), size = size)
+        simulator += gate
+
+        state.update { it.copy(circuit = simulator.getUIState()) }
         println("Gate count is now ${state.value.circuit.gates.size}")
     }
 
@@ -84,12 +91,8 @@ class SimulatorComponent(context: ComponentContext): SimulatorUiLogic, Component
                 val gridX = floor(position.x / it.layoutState.gridSizePx) + it.layoutState.currentX
                 val gridY = floor(position.y / it.layoutState.gridSizePx) + it.layoutState.currentY
                 currentCoordinate = Coordinate(gridX.toInt(), gridY.toInt())
-                val currentIndex = it.circuit.gates.indexOf(currentGate)
-                currentGate = it.circuit.gates[currentIndex].copy(x = gridX.toInt(), y = gridY.toInt())
-                it.copy(circuit = it.circuit.copy(gates = it.circuit.gates.mapIndexed { index, gate ->
-                    if (index == currentIndex) currentGate!!
-                    else gate
-                }))
+                simulator.moveGate(currentGate!!, currentCoordinate!!.asPosition())
+                it.copy(circuit = simulator.getUIState())
             }
         } else {
             val currentState = state.value
@@ -110,12 +113,11 @@ class SimulatorComponent(context: ComponentContext): SimulatorUiLogic, Component
     }
 
     private fun addCoordinate(coordinate: Coordinate) {
-        val currentWireIndex = state.value.circuit.wires.indexOf(currentWire)
-        if(currentWireIndex == -1) return
-        currentWire = currentWire!! + coordinate
-        state.update {
-            it.copy(circuit = it.circuit.copy(wires = it.circuit.wires.copyAndSet(currentWireIndex, currentWire!!)))
+        currentWire?.let {
+            currentWire = simulator.addPositionToWire(it, coordinate.asPosition())
         }
+
+        state.update { it.copy(circuit = simulator.getUIState()) }
     }
 }
 
@@ -125,5 +127,8 @@ fun <T> List<T>.copyAndSet(index: Int, value: T): List<T> {
     return result
 }
 
-data class SimulatorState(val circuit: CircuitUI = CircuitUI(),
-                          val layoutState: SimulatorLayoutState = SimulatorLayoutState(density = 1.0f))
+fun Coordinate.asPosition() = Position(x = x, y = y)
+
+data class SimulatorState(val circuit: UICircuit = UICircuit(listOf(), listOf()),
+                          val layoutState: SimulatorLayoutState =
+                              SimulatorLayoutState(density = 1.0f))
