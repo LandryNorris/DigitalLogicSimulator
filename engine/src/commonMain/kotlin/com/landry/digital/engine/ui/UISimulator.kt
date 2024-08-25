@@ -41,8 +41,11 @@ class UISimulator {
             val gateProperties = gate.gateProperties as? GateUIProperties
                 ?: continue
 
-            // TODO(Landry): Check if position is inside of gate
-            if(gateProperties.position == position) {
+            val isPositionWithinGate =
+                (position.x >= gateProperties.position.x && position.x <= gateProperties.position.x + gateProperties.size.width)
+                        &&
+                        (position.y >= gateProperties.position.y && position.y <= gateProperties.position.y + gateProperties.size.height)
+            if(isPositionWithinGate) {
                 return gate
             }
         }
