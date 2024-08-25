@@ -8,6 +8,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.landry.digital.engine.ui.UICircuit
 
 data class SimulatorLayoutState(val currentX: Double = 0.0, val currentY: Double = 0.0,
                                 val gridSize: Dp = 10.dp, val density: Float)
@@ -18,7 +19,7 @@ val SimulatorLayoutState.gridSizePx get() = gridSize.value * density
 fun SimulatorLayout(modifier: Modifier = Modifier,
                     layoutState: SimulatorLayoutState =
                         SimulatorLayoutState(density = 1f),
-                    circuit: CircuitUI) {
+                    circuit: UICircuit) {
     Canvas(modifier) {
         drawGrid(layoutState, Color(red = 0, green = 0, blue = 0, alpha = 0x90))
     }

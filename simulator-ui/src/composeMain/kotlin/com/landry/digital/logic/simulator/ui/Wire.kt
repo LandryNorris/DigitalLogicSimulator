@@ -9,19 +9,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
-
-data class Wire(val coordinates: List<Coordinate> = listOf(),
-                val state: Boolean = false)
-
-operator fun Wire.plus(coordinate: Coordinate) = Wire(coordinates + coordinate)
+import com.landry.digital.engine.ui.WireUIState
 
 data class Coordinate(val x: Int, val y: Int)
 
 @Composable
-fun Wire.draw(gridSize: Dp) {
-    if(coordinates.isEmpty()) return
+fun WireUIState.draw(gridSize: Dp) {
+    if(positions.isEmpty()) return
     Canvas(modifier = Modifier.width(gridSize*width()).height(gridSize*height())) {
-        coordinates.windowed(size = 2) {
+        positions.windowed(size = 2) {
             val x1 = it.first().x * gridSize.roundToPx()
             val y1 = it.first().y * gridSize.roundToPx()
             val x2 = it.last().x * gridSize.roundToPx()
@@ -33,6 +29,6 @@ fun Wire.draw(gridSize: Dp) {
     }
 }
 
-fun Wire.width() = coordinates.maxOf { it.x } - coordinates.minOf { it.x }
+fun WireUIState.width() = positions.maxOf { it.x } - positions.minOf { it.x }
 
-fun Wire.height() = coordinates.maxOf { it.y } - coordinates.minOf { it.y }
+fun WireUIState.height() = positions.maxOf { it.y } - positions.minOf { it.y }
