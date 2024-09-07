@@ -7,11 +7,20 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Outline
+import androidx.compose.ui.graphics.drawOutline
 import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.drawscope.DrawStyle
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.TextMeasurer
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.drawText
+import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.landry.digital.engine.component.*
@@ -24,6 +33,8 @@ private const val stroke = 2f
 private val onColor = Color(0x32, 0xCD, 0x32)
 private val offColor = Color(0x00, 0x64, 0x00)
 val strokeStyle = Stroke(stroke)
+
+private val textStyle = TextStyle()
 
 fun DrawScope.drawPins(values: List<Boolean>, x: Float, startY: Float, spacing: Float = 0f, radius: Float) {
     var y = startY
@@ -52,6 +63,8 @@ fun GateUIState.draw(gridSize: Dp = 10.dp) {
     val size = gateSize
     val position = gatePosition
 
+    val textMeasurer = rememberTextMeasurer()
+
     Canvas(modifier = Modifier.width(gridSize*size.width).height(gridSize*size.height)
         .offset((gridSize*position.x), (gridSize*position.y))) {
         when(type) {
@@ -62,6 +75,7 @@ fun GateUIState.draw(gridSize: Dp = 10.dp) {
             NorGate::class -> norGateUI(gate)
             Inverter::class -> inverterUI(gate)
             Buffer::class -> bufferUI(gate)
+            Switch::class -> switch(gate, textMeasurer)
         }
     }
 }
@@ -321,5 +335,22 @@ fun DrawScope.bufferUI(gate: GateUIState) {
     drawLine(Color.Black, start = Offset(0f, height), end = Offset(width, height/2), strokeWidth = stroke)
 
     drawPins(gate.gatePosition, gridSize, gate.inputPins, radius = height/5)
+    drawPins(gate.gatePosition, gridSize, gate.outputPins, radius = height/5)
+}
+
+fun DrawScope.switch(gate: GateUIState, textMeasurer: TextMeasurer) {
+    val width = this.size.width
+    val height = this.size.height
+    val gridSize = height/gate.gateSize.height
+
+    val rectangle = Outline.Rectangle(
+        Rect(Offset(0f, 0f), Size(width, height))
+    )
+    drawOutline(rectangle, Color.Black, style = Stroke(width = stroke))
+
+    val text = if(gate.outputPins[0].state) "1" else "0"
+
+    // TODO: properly handle text measurement to center this
+    drawText(textMeasurer, text, topLeft = Offset(width/3, 0f))
     drawPins(gate.gatePosition, gridSize, gate.outputPins, radius = height/5)
 }
