@@ -9,10 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.unit.dp
-import com.landry.digital.engine.component.AndGate
-import com.landry.digital.engine.component.LogicGate
-import com.landry.digital.engine.component.OrGate
-import com.landry.digital.engine.component.XorGate
+import com.landry.digital.engine.component.*
 import com.landry.digital.engine.ui.GateUIProperties
 import com.landry.digital.engine.ui.Position
 import com.landry.digital.engine.ui.getUIState
@@ -61,11 +58,40 @@ fun XorGatePreview() {
 
 @Composable
 @Preview
+fun SwitchOffPreview() {
+    val gate = Switch()
+    gate.output.state = false
+
+    gate.gateProperties = GateUIProperties(
+        Position(1, 1),
+        Switch.defaultSize
+    )
+    gate.getUIState()?.draw()
+}
+
+@Composable
+@Preview
+fun SwitchOnPreview() {
+    val gate = Switch()
+    gate.output.state = true
+    gate.click()
+
+    gate.gateProperties = GateUIProperties(
+        Position(1, 1),
+        Switch.defaultSize
+    )
+    gate.getUIState()?.draw()
+}
+
+@Composable
+@Preview
 fun GateColumn() {
     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
         Spacer(modifier = Modifier.height(2.dp))
         AndGatePreview()
         OrGatePreview()
         XorGatePreview()
+        SwitchOffPreview()
+        SwitchOnPreview()
     }
 }
