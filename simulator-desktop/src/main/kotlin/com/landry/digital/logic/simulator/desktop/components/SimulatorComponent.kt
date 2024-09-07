@@ -53,6 +53,7 @@ class SimulatorComponent(context: ComponentContext): SimulatorUiLogic, Component
                     }
                 }
                 Key.W -> addWire()
+                Key.S -> addGate(Switch(), Switch.defaultSize)
             }
         }
 
@@ -107,8 +108,13 @@ class SimulatorComponent(context: ComponentContext): SimulatorUiLogic, Component
     override fun onClick() {
         if(currentGate != null) currentGate = null
 
+        val clickedGate = gateAt(currentCoordinate!!)
         if(currentWire != null) {
             addCoordinate(currentCoordinate!!)
+        } else if(clickedGate != null) {
+            if(clickedGate is Switch) {
+                clickedGate.click()
+            }
         }
     }
 
@@ -118,6 +124,10 @@ class SimulatorComponent(context: ComponentContext): SimulatorUiLogic, Component
         }
 
         state.update { it.copy(circuit = simulator.getUIState()) }
+    }
+
+    private fun gateAt(coordinate: Coordinate): LogicGate? {
+        return simulator.getGateAt(coordinate.asPosition())
     }
 }
 
