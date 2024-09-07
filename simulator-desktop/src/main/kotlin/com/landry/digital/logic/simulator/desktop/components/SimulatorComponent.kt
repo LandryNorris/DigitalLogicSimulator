@@ -17,6 +17,8 @@ import kotlinx.coroutines.launch
 import kotlin.math.ceil
 import kotlin.math.floor
 
+const val HALF_GRID = 0.5
+
 interface SimulatorUiLogic {
     val state: MutableStateFlow<SimulatorState>
 
@@ -43,7 +45,7 @@ class SimulatorComponent(context: ComponentContext): SimulatorUiLogic, Component
             while(isRunning) {
                 simulator.runTick()
                 state.update { it.copy(circuit = simulator.getUIState()) }
-                delay(20)
+                delay(periodMs)
             }
         }
     }
@@ -107,8 +109,8 @@ class SimulatorComponent(context: ComponentContext): SimulatorUiLogic, Component
         if(currentGate != null) {
             state.update {
                 val position = event.changes.first().position
-                val gridX = floor(position.x / it.layoutState.gridSizePx + 0.5) + it.layoutState.currentX
-                val gridY = floor(position.y / it.layoutState.gridSizePx + 0.5) + it.layoutState.currentY
+                val gridX = floor(position.x / it.layoutState.gridSizePx + HALF_GRID) + it.layoutState.currentX
+                val gridY = floor(position.y / it.layoutState.gridSizePx + HALF_GRID) + it.layoutState.currentY
                 currentCoordinate = Coordinate(gridX.toInt(), gridY.toInt())
                 simulator.moveGate(currentGate!!, currentCoordinate!!.asPosition())
                 it.copy(circuit = simulator.getUIState())
@@ -117,8 +119,8 @@ class SimulatorComponent(context: ComponentContext): SimulatorUiLogic, Component
             val currentState = state.value
             val currentLayoutState = currentState.layoutState
             val position = event.changes.first().position
-            val gridX = floor(position.x / currentLayoutState.gridSizePx + 0.5) + currentLayoutState.currentX
-            val gridY = floor(position.y / currentLayoutState.gridSizePx + 0.5) + currentLayoutState.currentY
+            val gridX = floor(position.x / currentLayoutState.gridSizePx + HALF_GRID) + currentLayoutState.currentX
+            val gridY = floor(position.y / currentLayoutState.gridSizePx + HALF_GRID) + currentLayoutState.currentY
             currentCoordinate = Coordinate(gridX.toInt(), gridY.toInt())
         }
     }

@@ -1,7 +1,6 @@
 package com.landry.digital.logic.simulator.desktop
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -27,6 +26,8 @@ fun main() {
     uiMain()
 }
 
+const val SIMULATOR_PERIOD = 20L
+
 val simulatorComponent = SimulatorComponent(DefaultComponentContext(LifecycleRegistry()))
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -36,7 +37,7 @@ fun uiMain() = singleWindowApplication(
     onKeyEvent = simulatorComponent::onKeyPressed
 ) {
     LaunchedEffect(Unit) {
-        simulatorComponent.start(20)
+        simulatorComponent.start(SIMULATOR_PERIOD)
     }
     Box(modifier = Modifier.fillMaxSize().onPointerEvent(PointerEventType.Move) {
         simulatorComponent.onPointerMove(it)
