@@ -35,6 +35,9 @@ fun uiMain() = singleWindowApplication(
     state = WindowState(size = DpSize(800.dp, 800.dp)),
     onKeyEvent = simulatorComponent::onKeyPressed
 ) {
+    LaunchedEffect(Unit) {
+        simulatorComponent.start(20)
+    }
     Box(modifier = Modifier.fillMaxSize().onPointerEvent(PointerEventType.Move) {
         simulatorComponent.onPointerMove(it)
     }.clickable(interactionSource = remember {  MutableInteractionSource() }, indication = null) {

@@ -8,8 +8,12 @@ import com.arkivanov.decompose.ComponentContext
 import com.landry.digital.engine.component.*
 import com.landry.digital.engine.ui.*
 import com.landry.digital.logic.simulator.ui.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import kotlin.math.ceil
 import kotlin.math.floor
 
@@ -28,6 +32,21 @@ class SimulatorComponent(context: ComponentContext): SimulatorUiLogic, Component
     private var currentWire: WireUIState? = null
     private var currentCoordinate: Coordinate? = null
     private val simulator = UISimulator()
+
+    private val coroutineScope  = CoroutineScope(Dispatchers.Default)
+
+    var isRunning = false; private set
+
+    fun start(periodMs: Long) {
+        coroutineScope.launch {
+            isRunning = true
+            while(isRunning) {
+                simulator.runTick()
+                state.update { it.copy(circuit = simulator.getUIState()) }
+                delay(20)
+            }
+        }
+    }
 
     override fun onKeyPressed(keyEvent: KeyEvent): Boolean {
         if(keyEvent.type == KeyEventType.KeyUp) {

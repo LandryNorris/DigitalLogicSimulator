@@ -1,6 +1,12 @@
 package com.landry.digital.engine.ui
 
 import com.landry.digital.engine.component.LogicGate
+import com.landry.digital.engine.component.Pin
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlin.concurrent.Volatile
 
 class UISimulator {
     private val gates: MutableList<LogicGate> = mutableListOf()
@@ -27,6 +33,7 @@ class UISimulator {
 
         wires[index] = wire.copy(positions = wire.positions + position)
 
+        buildCircuit()
         return wires[index]
     }
 
@@ -50,6 +57,76 @@ class UISimulator {
             }
         }
         return null
+    }
+
+    fun outputPinAt(position: Position): Pin? {
+        return gates.firstNotNullOfOrNull { it.findOutputPin(position) }
+    }
+
+    private fun LogicGate.findOutputPin(position: Position): Pin? {
+        val uiState = getUIState() ?: return null
+
+        for((pinUIState, pin) in uiState.outputPins.zip(outputs)) {
+            if(pinUIState.position == position) {
+                return pin
+            }
+        }
+
+        return null
+    }
+
+    private fun gateInputPinIndexAt(position: Position): Pair<LogicGate, Int>? {
+        return gates.firstNotNullOfOrNull { gate ->
+            val index = gate.inputPinIndexAt(position) ?: return@firstNotNullOfOrNull null
+            gate to index
+        }
+    }
+
+    private fun LogicGate.inputPinIndexAt(position: Position): Int? {
+        val uiState = getUIState() ?: return null
+
+        for((index, pinUIState) in uiState.inputPins.withIndex()) {
+            if(pinUIState.position == position) {
+                return index
+            }
+        }
+
+        return null
+    }
+
+    fun buildCircuit() {
+        for(wire in wires) {
+            if(wire.positions.size < 2) continue
+
+            // find the output pin for this wire
+            var outputPin: Pin? = null
+            for(position in wire.positions) {
+                val pin = outputPinAt(position)
+                if(pin != null) {
+                    outputPin = pin
+                    break // ensure that only one output is on any wire
+                }
+            }
+
+            // if a wire has no output, there's nothing to connect inputs to
+            if(outputPin == null) continue
+
+            // connect input pins to the output pin
+            for(position in wire.positions) {
+                val (gate, index) = gateInputPinIndexAt(position) ?: continue
+
+                gate.inputs[index] = outputPin
+            }
+        }
+    }
+
+    fun runTick() {
+        for(gate in gates) {
+            gate.update()
+        }
+        for(gate in gates) {
+            gate.apply()
+        }
     }
 }
 
