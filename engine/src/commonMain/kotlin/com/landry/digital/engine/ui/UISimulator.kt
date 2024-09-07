@@ -11,10 +11,6 @@ import kotlin.concurrent.Volatile
 class UISimulator {
     private val gates: MutableList<LogicGate> = mutableListOf()
     private val wires: MutableList<WireUIState> = mutableListOf()
-    private val coroutineScope = CoroutineScope(Dispatchers.Default)
-
-    @Volatile
-    var isRunning: Boolean = false; private set
 
     fun getUIState(): UICircuit {
         return UICircuit(
@@ -124,20 +120,13 @@ class UISimulator {
         }
     }
 
-    fun start(periodMs: Long) {
-        coroutineScope.launch {
-            isRunning = true
-            while(isRunning) {
-                for(gate in gates) {
-                    gate.apply()
-                    delay(periodMs)
-                }
-            }
+    fun runTick() {
+        for(gate in gates) {
+            gate.update()
         }
-    }
-
-    fun stop() {
-        isRunning = false
+        for(gate in gates) {
+            gate.apply()
+        }
     }
 }
 
