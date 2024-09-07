@@ -107,8 +107,8 @@ class SimulatorComponent(context: ComponentContext): SimulatorUiLogic, Component
         if(currentGate != null) {
             state.update {
                 val position = event.changes.first().position
-                val gridX = floor(position.x / it.layoutState.gridSizePx) + it.layoutState.currentX
-                val gridY = floor(position.y / it.layoutState.gridSizePx) + it.layoutState.currentY
+                val gridX = floor(position.x / it.layoutState.gridSizePx + 0.5) + it.layoutState.currentX
+                val gridY = floor(position.y / it.layoutState.gridSizePx + 0.5) + it.layoutState.currentY
                 currentCoordinate = Coordinate(gridX.toInt(), gridY.toInt())
                 simulator.moveGate(currentGate!!, currentCoordinate!!.asPosition())
                 it.copy(circuit = simulator.getUIState())
@@ -117,8 +117,8 @@ class SimulatorComponent(context: ComponentContext): SimulatorUiLogic, Component
             val currentState = state.value
             val currentLayoutState = currentState.layoutState
             val position = event.changes.first().position
-            val gridX = floor(position.x / currentLayoutState.gridSizePx) + currentLayoutState.currentX
-            val gridY = floor(position.y / currentLayoutState.gridSizePx) + currentLayoutState.currentY
+            val gridX = floor(position.x / currentLayoutState.gridSizePx + 0.5) + currentLayoutState.currentX
+            val gridY = floor(position.y / currentLayoutState.gridSizePx + 0.5) + currentLayoutState.currentY
             currentCoordinate = Coordinate(gridX.toInt(), gridY.toInt())
         }
     }
