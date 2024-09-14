@@ -14,9 +14,12 @@ import com.landry.digital.engine.ui.WireUIState
 data class Coordinate(val x: Int, val y: Int)
 
 @Composable
-fun WireUIState.draw(gridSize: Dp) {
+fun WireUIState.draw(gridSize: Dp, offsetX: Dp, offsetY: Dp) {
     if(positions.isEmpty()) return
-    Canvas(modifier = Modifier.width(gridSize*width()).height(gridSize*height())) {
+    Canvas(modifier = Modifier
+        .width(gridSize*width()).height(gridSize*height())
+        .offset(offsetX, offsetY)
+    ) {
         positions.windowed(size = 2) {
             val x1 = it.first().x * gridSize.roundToPx()
             val y1 = it.first().y * gridSize.roundToPx()

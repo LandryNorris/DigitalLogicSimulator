@@ -4,6 +4,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.rememberScrollableState
 import androidx.compose.foundation.gestures.scrollable
+import androidx.compose.foundation.layout.offset
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -13,7 +14,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.landry.digital.engine.ui.UICircuit
 
-data class SimulatorLayoutState(val currentX: Double = 0.0, val currentY: Double = 0.0,
+data class SimulatorLayoutState(val currentX: Float = 0.0f, val currentY: Float = 0.0f,
                                 val gridSize: Dp = 10.dp, val density: Float)
 
 val SimulatorLayoutState.gridSizePx get() = gridSize.value * density
@@ -24,35 +25,38 @@ fun SimulatorLayout(modifier: Modifier = Modifier,
                         SimulatorLayoutState(density = 1f),
                     onScroll: (Float) -> Unit,
                     circuit: UICircuit) {
+    val gridOffsetX = layoutState.currentX % layoutState.gridSizePx
+    val gridOffsetY = layoutState.currentY % layoutState.gridSizePx
     Canvas(modifier.scrollable(
         orientation = Orientation.Vertical,
         state = rememberScrollableState { delta ->
             onScroll(delta)
             delta
         }
-    )) {
+    ).offset(gridOffsetX.dp, gridOffsetY.dp)) {
         drawGrid(layoutState, Color(red = 0, green = 0, blue = 0, alpha = 0x90))
     }
 
     for(gate in circuit.gates) {
-        gate.draw(layoutState.gridSize)
+        gate.draw(layoutState.gridSize, layoutState.currentX.dp, layoutState.currentY.dp)
     }
 
     for(wire in circuit.wires) {
-        wire.draw(layoutState.gridSize)
+        wire.draw(layoutState.gridSize, layoutState.currentX.dp, layoutState.currentY.dp)
     }
 }
 
 fun DrawScope.drawGrid(simulatorLayoutState: SimulatorLayoutState, color: Color) {
-    var x = 0f
-    while(x < size.width) {
-        drawLine(color, start = Offset(x, 0f), end = Offset(x, size.height))
-        x += simulatorLayoutState.gridSize.roundToPx()
+    val gridSizePx = simulatorLayoutState.gridSize.roundToPx()
+    var x = -gridSizePx.toFloat()
+    while(x < size.width + gridSizePx) {
+        drawLine(color, start = Offset(x, -gridSizePx.toFloat()), end = Offset(x, size.height + gridSizePx))
+        x += gridSizePx
     }
 
-    var y = 0f
-    while(y < size.height) {
-        drawLine(color, start = Offset(0f, y), end = Offset(size.width, y))
-        y += simulatorLayoutState.gridSize.roundToPx()
+    var y = -gridSizePx.toFloat()
+    while(y < size.height + gridSizePx) {
+        drawLine(color, start = Offset(-gridSizePx.toFloat(), y), end = Offset(size.width + gridSizePx, y))
+        y += gridSizePx
     }
 }

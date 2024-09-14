@@ -1,6 +1,7 @@
 package com.landry.digital.logic.simulator.desktop
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,6 +13,7 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.onPointerEvent
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
@@ -41,6 +43,12 @@ fun uiMain() = singleWindowApplication(
     }
     Box(modifier = Modifier.fillMaxSize().onPointerEvent(PointerEventType.Move) {
         simulatorComponent.onPointerMove(it)
+    }.pointerInput(Unit) {
+        detectDragGestures { change, dragAmount ->
+            change.consume()
+
+            simulatorComponent.onPointerDrag(dragAmount.x, dragAmount.y)
+        }
     }.clickable(interactionSource = remember {  MutableInteractionSource() }, indication = null) {
         simulatorComponent.onClick()
     }) {
