@@ -1,10 +1,11 @@
 package com.landry.digital.logic.simulator.ui
 
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
@@ -21,8 +22,10 @@ import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.landry.digital.engine.component.*
 import com.landry.digital.engine.ui.GateUIProperties
 import com.landry.digital.engine.ui.GateUIState
@@ -63,19 +66,29 @@ fun GateUIState.draw(gridSize: Dp = 10.dp, offsetX: Dp = 0.dp, offsetY: Dp = 0.d
     val size = gateSize
     val position = gatePosition
 
-    val textMeasurer = rememberTextMeasurer()
-
-    Canvas(modifier = Modifier.width(gridSize*size.width).height(gridSize*size.height)
+    Box(modifier = Modifier.width(gridSize*size.width).height(gridSize*size.height)
         .offset((gridSize*position.x) + offsetX, (gridSize*position.y) + offsetY)) {
-        when(type) {
-            AndGate::class -> andGateUI(gate)
-            NandGate::class -> nandGateUI(gate)
-            XorGate::class -> xorGateUI(gate)
-            OrGate::class -> orGateUI(gate)
-            NorGate::class -> norGateUI(gate)
-            Inverter::class -> inverterUI(gate)
-            Buffer::class -> bufferUI(gate)
-            Switch::class -> switch(gate, textMeasurer)
+        Canvas(modifier = Modifier.matchParentSize()) {
+            when(type) {
+                AndGate::class -> andGateUI(gate)
+                NandGate::class -> nandGateUI(gate)
+                XorGate::class -> xorGateUI(gate)
+                OrGate::class -> orGateUI(gate)
+                NorGate::class -> norGateUI(gate)
+                Inverter::class -> inverterUI(gate)
+                Buffer::class -> bufferUI(gate)
+                Switch::class -> switch(gate)
+            }
+        }
+        // Switches have text
+        if(type == Switch::class) {
+            val text = if(gate.outputPins[0].state) "1" else "0"
+            Text(modifier = Modifier.matchParentSize()
+                .wrapContentHeight(align = Alignment.CenterVertically),
+                text = text,
+                // TODO(Landry): Is there a better way to convert dp to a text unit?
+                fontSize = gridSize.value.sp,
+                textAlign = TextAlign.Center)
         }
     }
 }
@@ -338,7 +351,7 @@ fun DrawScope.bufferUI(gate: GateUIState) {
     drawPins(gate.gatePosition, gridSize, gate.outputPins, radius = height/5)
 }
 
-fun DrawScope.switch(gate: GateUIState, textMeasurer: TextMeasurer) {
+fun DrawScope.switch(gate: GateUIState) {
     val width = this.size.width
     val height = this.size.height
     val gridSize = height/gate.gateSize.height
@@ -348,9 +361,5 @@ fun DrawScope.switch(gate: GateUIState, textMeasurer: TextMeasurer) {
     )
     drawOutline(rectangle, Color.Black, style = Stroke(width = stroke))
 
-    val text = if(gate.outputPins[0].state) "1" else "0"
-
-    // TODO: properly handle text measurement to center this
-    drawText(textMeasurer, text, topLeft = Offset(width/3, 0f))
     drawPins(gate.gatePosition, gridSize, gate.outputPins, radius = height/5)
 }
