@@ -8,6 +8,7 @@ import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.ComponentContext
 import com.landry.digital.engine.component.*
 import com.landry.digital.engine.ui.*
+import com.landry.digital.logic.simulator.desktop.CursorPosition
 import com.landry.digital.logic.simulator.ui.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -15,10 +16,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlin.math.floor
 import kotlin.math.roundToInt
-
-const val HALF_GRID = 0.5
 
 const val MIN_GRID_SIZE = 5
 const val MAX_GRID_SIZE = 100
@@ -39,7 +37,7 @@ class SimulatorComponent(context: ComponentContext): SimulatorUiLogic, Component
     override val state = MutableStateFlow(SimulatorState())
     private var currentGate: LogicGate? = null
     private var currentWire: WireUIState? = null
-    private var currentCoordinate: Coordinate? = null
+    private var currentCoordinate: CursorPosition? = null
     private val simulator = UISimulator()
 
     private val coroutineScope  = CoroutineScope(Dispatchers.Default)
@@ -119,9 +117,9 @@ class SimulatorComponent(context: ComponentContext): SimulatorUiLogic, Component
                 val currentLayoutState = currentState.layoutState
                 val rawPosition = event.changes.first().position
                 val position = rawPosition - Offset(currentLayoutState.currentX, currentLayoutState.currentY)
-                val gridX = floor(position.x / currentLayoutState.gridSizePx + HALF_GRID)
-                val gridY = floor(position.y / currentLayoutState.gridSizePx + HALF_GRID)
-                currentCoordinate = Coordinate(gridX.toInt(), gridY.toInt())
+                val gridX = position.x / currentLayoutState.gridSizePx
+                val gridY = position.y / currentLayoutState.gridSizePx
+                currentCoordinate = CursorPosition(gridX, gridY)
                 simulator.moveGate(currentGate!!, currentCoordinate!!.asPosition())
                 it.copy(circuit = simulator.getUIState())
             }
@@ -130,9 +128,9 @@ class SimulatorComponent(context: ComponentContext): SimulatorUiLogic, Component
             val currentLayoutState = currentState.layoutState
             val rawPosition = event.changes.first().position
             val position = rawPosition - Offset(currentLayoutState.currentX, currentLayoutState.currentY)
-            val gridX = floor(position.x / currentLayoutState.gridSizePx + HALF_GRID)
-            val gridY = floor(position.y / currentLayoutState.gridSizePx + HALF_GRID)
-            currentCoordinate = Coordinate(gridX.toInt(), gridY.toInt())
+            val gridX = position.x / currentLayoutState.gridSizePx
+            val gridY = position.y / currentLayoutState.gridSizePx
+            currentCoordinate = CursorPosition(gridX, gridY)
         }
     }
 
@@ -153,14 +151,14 @@ class SimulatorComponent(context: ComponentContext): SimulatorUiLogic, Component
     override fun onClick() {
         if(currentGate != null) currentGate = null
 
-        val clickedGate = gateAt(currentCoordinate!!)
-        val clickedOutputPin = simulator.outputPinAt(currentCoordinate!!.asPosition())
+        val clickedGate = gateAt(currentCoordinate!!.asContinuousPosition())
+        val clickedOutputPin = simulator.outputPinAt(currentCoordinate!!.asContinuousPosition())
 
         if(currentWire != null) {
-            addCoordinate(currentCoordinate!!)
+            addCoordinate(currentCoordinate!!.asPosition())
         } else if(clickedOutputPin != null) {
             addWire()
-            addCoordinate(currentCoordinate!!)
+            addCoordinate(currentCoordinate!!.asPosition())
         } else if(clickedGate != null) {
             if(clickedGate is Switch) {
                 clickedGate.click()
@@ -183,16 +181,16 @@ class SimulatorComponent(context: ComponentContext): SimulatorUiLogic, Component
         }
     }
 
-    private fun addCoordinate(coordinate: Coordinate) {
+    private fun addCoordinate(coordinate: Position) {
         currentWire?.let {
-            currentWire = simulator.addPositionToWire(it, coordinate.asPosition())
+            currentWire = simulator.addPositionToWire(it, coordinate)
         }
 
         state.update { it.copy(circuit = simulator.getUIState()) }
     }
 
-    private fun gateAt(coordinate: Coordinate): LogicGate? {
-        return simulator.getGateAt(coordinate.asPosition())
+    private fun gateAt(coordinate: ContinuousPosition): LogicGate? {
+        return simulator.getGateAt(coordinate)
     }
 }
 
@@ -202,7 +200,9 @@ fun <T> List<T>.copyAndSet(index: Int, value: T): List<T> {
     return result
 }
 
-fun Coordinate.asPosition() = Position(x = x, y = y)
+fun CursorPosition.asPosition() = Position(x = x.roundToInt(), y = y.roundToInt())
+
+fun CursorPosition.asContinuousPosition() = ContinuousPosition(x = x, y = y)
 
 data class SimulatorState(val circuit: UICircuit = UICircuit(listOf(), listOf()),
                           val layoutState: SimulatorLayoutState =

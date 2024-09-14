@@ -11,8 +11,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import com.landry.digital.engine.ui.WireUIState
 
-data class Coordinate(val x: Int, val y: Int)
-
 @Composable
 fun WireUIState.draw(gridSize: Dp, offsetX: Dp, offsetY: Dp) {
     if(positions.isEmpty()) return

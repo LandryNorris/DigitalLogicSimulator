@@ -43,7 +43,7 @@ class UISimulator {
         gate.gateProperties = currentProperties.copy(position = position)
     }
 
-    fun getGateAt(position: Position): LogicGate? {
+    fun getGateAt(position: ContinuousPosition): LogicGate? {
         for(gate in gates) {
             val gateProperties = gate.gateProperties as? GateUIProperties
                 ?: continue
@@ -59,6 +59,10 @@ class UISimulator {
         return null
     }
 
+    fun outputPinAt(position: ContinuousPosition): Pin? {
+        return gates.firstNotNullOfOrNull { it.findOutputPin(position) }
+    }
+
     fun outputPinAt(position: Position): Pin? {
         return gates.firstNotNullOfOrNull { it.findOutputPin(position) }
     }
@@ -68,6 +72,18 @@ class UISimulator {
 
         for((pinUIState, pin) in uiState.outputPins.zip(outputs)) {
             if(pinUIState.position == position) {
+                return pin
+            }
+        }
+
+        return null
+    }
+
+    private fun LogicGate.findOutputPin(position: ContinuousPosition): Pin? {
+        val uiState = getUIState() ?: return null
+
+        for((pinUIState, pin) in uiState.outputPins.zip(outputs)) {
+            if(position.isCloseTo(pinUIState.position)) {
                 return pin
             }
         }
@@ -142,4 +158,18 @@ fun LogicGate.getUIState(): GateUIState? {
         getInputPinStates(this),
         getOutputPinStates(this)
     )
+}
+
+private fun ContinuousPosition.isCloseTo(position: Position): Boolean {
+    // shortcut for common case. Performance benefit
+    if(y < position.y - 2 || y > position.y + 2 || x < position.x - 2 || x > position.x + 2) {
+        return false
+    }
+
+    val dx = x - position.x
+    val dy = y - position.y
+
+    val distanceSquared = dx*dx + dy*dy
+
+    return distanceSquared <= 0.2
 }
