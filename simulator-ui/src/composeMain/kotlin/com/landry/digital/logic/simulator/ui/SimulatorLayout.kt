@@ -1,6 +1,9 @@
 package com.landry.digital.logic.simulator.ui
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.rememberScrollableState
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -19,8 +22,15 @@ val SimulatorLayoutState.gridSizePx get() = gridSize.value * density
 fun SimulatorLayout(modifier: Modifier = Modifier,
                     layoutState: SimulatorLayoutState =
                         SimulatorLayoutState(density = 1f),
+                    onScroll: (Float) -> Unit,
                     circuit: UICircuit) {
-    Canvas(modifier) {
+    Canvas(modifier.scrollable(
+        orientation = Orientation.Vertical,
+        state = rememberScrollableState { delta ->
+            onScroll(delta)
+            delta
+        }
+    )) {
         drawGrid(layoutState, Color(red = 0, green = 0, blue = 0, alpha = 0x90))
     }
 
