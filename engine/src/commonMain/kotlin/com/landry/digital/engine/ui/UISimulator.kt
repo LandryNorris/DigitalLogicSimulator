@@ -2,11 +2,6 @@ package com.landry.digital.engine.ui
 
 import com.landry.digital.engine.component.LogicGate
 import com.landry.digital.engine.component.Pin
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlin.concurrent.Volatile
 
 class UISimulator {
     private val gates: MutableList<LogicGate> = mutableListOf()
@@ -25,6 +20,7 @@ class UISimulator {
 
     operator fun plusAssign(wire: WireUIState) {
         wires.add(wire)
+        println("Added a wire")
     }
 
     fun addPositionToWire(wire: WireUIState, position: Position): WireUIState? {
@@ -33,7 +29,16 @@ class UISimulator {
 
         wires[index] = wire.copy(positions = wire.positions + position)
 
+        println("Added position to wire")
         buildCircuit()
+        return wires[index]
+    }
+
+    fun setUnfinalizedPosition(currentWire: WireUIState, position: Position?): WireUIState? {
+        val index = wires.indexOf(currentWire)
+        if(index == -1) return null
+
+        wires[index] = currentWire.copy(unfinalizedPosition = position)
         return wires[index]
     }
 
