@@ -18,7 +18,9 @@ fun WireUIState.draw(gridSize: Dp, offsetX: Dp, offsetY: Dp) {
         .width(gridSize*width()).height(gridSize*height())
         .offset(offsetX, offsetY)
     ) {
-        positions.windowed(size = 2) {
+        val positionsToDraw = (positions + unfinalizedPosition).filterNotNull()
+
+        positionsToDraw.windowed(size = 2) {
             val x1 = it.first().x * gridSize.roundToPx()
             val y1 = it.first().y * gridSize.roundToPx()
             val x2 = it.last().x * gridSize.roundToPx()

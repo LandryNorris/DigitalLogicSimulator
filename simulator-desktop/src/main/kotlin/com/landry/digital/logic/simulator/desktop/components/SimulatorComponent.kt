@@ -75,6 +75,7 @@ class SimulatorComponent(context: ComponentContext): SimulatorUiLogic, Component
                         }
                     }
                     if(currentWire != null) {
+                        simulator.setUnfinalizedPosition(currentWire!!, null)
                         currentWire = null
                     }
                 }
@@ -111,26 +112,24 @@ class SimulatorComponent(context: ComponentContext): SimulatorUiLogic, Component
     }
 
     override fun onPointerMove(event: PointerEvent) {
+        val currentState = state.value
+        val currentLayoutState = currentState.layoutState
+        val rawPosition = event.changes.first().position
+        val position = rawPosition - Offset(currentLayoutState.currentX, currentLayoutState.currentY)
+        val gridX = position.x / currentLayoutState.gridSizePx
+        val gridY = position.y / currentLayoutState.gridSizePx
+        currentCoordinate = CursorPosition(gridX, gridY)
+
         if(currentGate != null) {
             state.update {
-                val currentState = state.value
-                val currentLayoutState = currentState.layoutState
-                val rawPosition = event.changes.first().position
-                val position = rawPosition - Offset(currentLayoutState.currentX, currentLayoutState.currentY)
-                val gridX = position.x / currentLayoutState.gridSizePx
-                val gridY = position.y / currentLayoutState.gridSizePx
-                currentCoordinate = CursorPosition(gridX, gridY)
                 simulator.moveGate(currentGate!!, currentCoordinate!!.asPosition())
                 it.copy(circuit = simulator.getUIState())
             }
-        } else {
-            val currentState = state.value
-            val currentLayoutState = currentState.layoutState
-            val rawPosition = event.changes.first().position
-            val position = rawPosition - Offset(currentLayoutState.currentX, currentLayoutState.currentY)
-            val gridX = position.x / currentLayoutState.gridSizePx
-            val gridY = position.y / currentLayoutState.gridSizePx
-            currentCoordinate = CursorPosition(gridX, gridY)
+        } else if(currentWire != null) {
+            state.update {
+                currentWire = simulator.setUnfinalizedPosition(currentWire!!, currentCoordinate!!.asPosition())
+                it.copy(circuit = simulator.getUIState())
+            }
         }
     }
 
