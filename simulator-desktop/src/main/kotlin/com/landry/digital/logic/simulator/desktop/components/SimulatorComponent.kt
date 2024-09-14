@@ -1,8 +1,8 @@
 package com.landry.digital.logic.simulator.desktop.components
 
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.input.key.*
 import androidx.compose.ui.input.pointer.PointerEvent
+import androidx.compose.ui.unit.coerceIn
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.ComponentContext
 import com.landry.digital.engine.component.*
@@ -14,10 +14,14 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlin.math.ceil
 import kotlin.math.floor
+import kotlin.math.roundToInt
 
 const val HALF_GRID = 0.5
+
+const val MIN_GRID_SIZE = 5
+const val MAX_GRID_SIZE = 100
+const val SCROLL_ADJUSTING_RATE = 0.1
 
 interface SimulatorUiLogic {
     val state: MutableStateFlow<SimulatorState>
@@ -26,6 +30,7 @@ interface SimulatorUiLogic {
     fun onKeyPressed(keyEvent: KeyEvent): Boolean
     fun onPointerMove(event: PointerEvent)
     fun onClick()
+    fun onScroll(delta: Float)
 }
 
 class SimulatorComponent(context: ComponentContext): SimulatorUiLogic, ComponentContext by context {
@@ -140,6 +145,21 @@ class SimulatorComponent(context: ComponentContext): SimulatorUiLogic, Component
             if(clickedGate is Switch) {
                 clickedGate.click()
             }
+        }
+    }
+
+    override fun onScroll(delta: Float) {
+        state.update {
+            val adjustedDelta = delta * SCROLL_ADJUSTING_RATE
+            val oldGridSize = it.layoutState.gridSize
+            val newGridSize = (oldGridSize + adjustedDelta.roundToInt().dp)
+                .coerceIn(MIN_GRID_SIZE.dp, MAX_GRID_SIZE.dp)
+
+            it.copy(
+                layoutState = it.layoutState.copy(
+                    gridSize = newGridSize
+                )
+            )
         }
     }
 

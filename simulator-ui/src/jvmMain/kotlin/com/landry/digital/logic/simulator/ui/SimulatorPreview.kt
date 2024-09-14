@@ -34,5 +34,5 @@ fun SimulatorPreview() {
             )
         )
     )
-    SimulatorLayout(modifier = Modifier.fillMaxSize(), circuit = circuit)
+    SimulatorLayout(modifier = Modifier.fillMaxSize(), onScroll = {}, circuit = circuit)
 }
