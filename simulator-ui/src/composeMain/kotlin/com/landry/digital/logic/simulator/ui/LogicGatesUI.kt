@@ -58,7 +58,7 @@ fun DrawScope.drawPins(gatePosition: Position, gridSize: Float, pins: List<PinUI
 }
 
 @Composable
-fun GateUIState.draw(gridSize: Dp = 10.dp) {
+fun GateUIState.draw(gridSize: Dp = 10.dp, offsetX: Dp = 0.dp, offsetY: Dp = 0.dp) {
     val gate = this
     val size = gateSize
     val position = gatePosition
@@ -66,7 +66,7 @@ fun GateUIState.draw(gridSize: Dp = 10.dp) {
     val textMeasurer = rememberTextMeasurer()
 
     Canvas(modifier = Modifier.width(gridSize*size.width).height(gridSize*size.height)
-        .offset((gridSize*position.x), (gridSize*position.y))) {
+        .offset((gridSize*position.x) + offsetX, (gridSize*position.y) + offsetY)) {
         when(type) {
             AndGate::class -> andGateUI(gate)
             NandGate::class -> nandGateUI(gate)

@@ -1,5 +1,6 @@
 package com.landry.digital.logic.simulator.desktop.components
 
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.key.*
 import androidx.compose.ui.input.pointer.PointerEvent
 import androidx.compose.ui.unit.coerceIn
@@ -31,6 +32,7 @@ interface SimulatorUiLogic {
     fun onPointerMove(event: PointerEvent)
     fun onClick()
     fun onScroll(delta: Float)
+    fun onPointerDrag(offsetX: Float, offsetY: Float)
 }
 
 class SimulatorComponent(context: ComponentContext): SimulatorUiLogic, ComponentContext by context {
@@ -113,9 +115,12 @@ class SimulatorComponent(context: ComponentContext): SimulatorUiLogic, Component
     override fun onPointerMove(event: PointerEvent) {
         if(currentGate != null) {
             state.update {
-                val position = event.changes.first().position
-                val gridX = floor(position.x / it.layoutState.gridSizePx + HALF_GRID) + it.layoutState.currentX
-                val gridY = floor(position.y / it.layoutState.gridSizePx + HALF_GRID) + it.layoutState.currentY
+                val currentState = state.value
+                val currentLayoutState = currentState.layoutState
+                val rawPosition = event.changes.first().position
+                val position = rawPosition - Offset(currentLayoutState.currentX, currentLayoutState.currentY)
+                val gridX = floor(position.x / currentLayoutState.gridSizePx + HALF_GRID)
+                val gridY = floor(position.y / currentLayoutState.gridSizePx + HALF_GRID)
                 currentCoordinate = Coordinate(gridX.toInt(), gridY.toInt())
                 simulator.moveGate(currentGate!!, currentCoordinate!!.asPosition())
                 it.copy(circuit = simulator.getUIState())
@@ -123,10 +128,25 @@ class SimulatorComponent(context: ComponentContext): SimulatorUiLogic, Component
         } else {
             val currentState = state.value
             val currentLayoutState = currentState.layoutState
-            val position = event.changes.first().position
-            val gridX = floor(position.x / currentLayoutState.gridSizePx + HALF_GRID) + currentLayoutState.currentX
-            val gridY = floor(position.y / currentLayoutState.gridSizePx + HALF_GRID) + currentLayoutState.currentY
+            val rawPosition = event.changes.first().position
+            val position = rawPosition - Offset(currentLayoutState.currentX, currentLayoutState.currentY)
+            val gridX = floor(position.x / currentLayoutState.gridSizePx + HALF_GRID)
+            val gridY = floor(position.y / currentLayoutState.gridSizePx + HALF_GRID)
             currentCoordinate = Coordinate(gridX.toInt(), gridY.toInt())
+        }
+    }
+
+    override fun onPointerDrag(offsetX: Float, offsetY: Float) {
+        state.update {
+            val currentX = it.layoutState.currentX
+            val currentY = it.layoutState.currentY
+
+            it.copy(
+                layoutState = it.layoutState.copy(
+                    currentX = currentX + offsetX,
+                    currentY = currentY + offsetY
+                )
+            )
         }
     }
 
