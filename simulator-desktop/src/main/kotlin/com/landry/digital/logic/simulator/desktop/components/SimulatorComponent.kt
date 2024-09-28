@@ -37,6 +37,10 @@ class SimulatorComponent(context: ComponentContext): SimulatorUiLogic, Component
     override val state = MutableStateFlow(SimulatorState())
     private var currentGate: LogicGate? = null
     private var currentWire: WireUIState? = null
+
+    /**
+     * The current grid-space coordinate of the user's mouse
+     */
     private var currentCoordinate: CursorPosition? = null
     private val simulator = UISimulator()
 
@@ -115,7 +119,7 @@ class SimulatorComponent(context: ComponentContext): SimulatorUiLogic, Component
         val currentState = state.value
         val currentLayoutState = currentState.layoutState
         val rawPosition = event.changes.first().position
-        val position = rawPosition - Offset(currentLayoutState.currentX, currentLayoutState.currentY)
+        val position = rawPosition + Offset(currentLayoutState.currentX, currentLayoutState.currentY)
         val gridX = position.x / currentLayoutState.gridSizePx
         val gridY = position.y / currentLayoutState.gridSizePx
         currentCoordinate = CursorPosition(gridX, gridY)

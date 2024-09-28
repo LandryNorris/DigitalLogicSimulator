@@ -14,8 +14,18 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.landry.digital.engine.ui.UICircuit
 
-data class SimulatorLayoutState(val currentX: Float = 0.0f, val currentY: Float = 0.0f,
-                                val gridSize: Dp = 10.dp, val density: Float)
+data class SimulatorLayoutState(
+    /**
+     * The current grid-space x-coordinate of the left of the screen.
+     */
+    val currentX: Float = 0.0f,
+    /**
+     * The current grid-space y-coordinate of the top of the screen.
+     */
+    val currentY: Float = 0.0f,
+    val gridSize: Dp = 10.dp,
+    val density: Float
+)
 
 val SimulatorLayoutState.gridSizePx get() = gridSize.value * density
 
@@ -25,8 +35,8 @@ fun SimulatorLayout(modifier: Modifier = Modifier,
                         SimulatorLayoutState(density = 1f),
                     onScroll: (Float) -> Unit,
                     circuit: UICircuit) {
-    val gridOffsetX = layoutState.currentX % layoutState.gridSizePx
-    val gridOffsetY = layoutState.currentY % layoutState.gridSizePx
+    val gridOffsetX = -layoutState.currentX % layoutState.gridSizePx
+    val gridOffsetY = -layoutState.currentY % layoutState.gridSizePx
     Canvas(modifier.scrollable(
         orientation = Orientation.Vertical,
         state = rememberScrollableState { delta ->
@@ -38,11 +48,11 @@ fun SimulatorLayout(modifier: Modifier = Modifier,
     }
 
     for(gate in circuit.gates) {
-        gate.draw(layoutState.gridSize, layoutState.currentX.dp, layoutState.currentY.dp)
+        gate.draw(layoutState.gridSize, -layoutState.currentX.dp, -layoutState.currentY.dp)
     }
 
     for(wire in circuit.wires) {
-        wire.draw(layoutState.gridSize, layoutState.currentX.dp, layoutState.currentY.dp)
+        wire.draw(layoutState.gridSize, -layoutState.currentX.dp, -layoutState.currentY.dp)
     }
 }
 
