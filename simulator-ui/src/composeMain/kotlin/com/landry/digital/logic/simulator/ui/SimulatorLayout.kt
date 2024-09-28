@@ -16,16 +16,26 @@ import com.landry.digital.engine.ui.UICircuit
 
 data class SimulatorLayoutState(
     /**
-     * The current grid-space x-coordinate of the left of the screen.
+     * The current pixel-space x-coordinate of the left of the screen.
      */
     val currentX: Float = 0.0f,
     /**
-     * The current grid-space y-coordinate of the top of the screen.
+     * The current pixel-space y-coordinate of the top of the screen.
      */
     val currentY: Float = 0.0f,
     val gridSize: Dp = 10.dp,
-    val density: Float
+    val density: Float,
 )
+
+/**
+ * The current grid-space x-coordinate of the left of the screen.
+ */
+val SimulatorLayoutState.currentGridX: Float get() = currentX / gridSizePx
+
+/**
+ * The current grid-space y-coordinate of the top of the screen.
+ */
+val SimulatorLayoutState.currentGridY: Float get() = currentY / gridSizePx
 
 val SimulatorLayoutState.gridSizePx get() = gridSize.value * density
 
