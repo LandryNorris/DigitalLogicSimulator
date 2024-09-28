@@ -47,7 +47,7 @@ fun uiMain() = singleWindowApplication(
         detectDragGestures { change, dragAmount ->
             change.consume()
 
-            simulatorComponent.onPointerDrag(dragAmount.x, dragAmount.y)
+            simulatorComponent.onPointerDrag(-dragAmount.x, -dragAmount.y)
         }
     }.clickable(interactionSource = remember {  MutableInteractionSource() }, indication = null) {
         simulatorComponent.onClick()
