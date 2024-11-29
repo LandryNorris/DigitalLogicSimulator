@@ -23,7 +23,7 @@ data class SimulatorLayoutState(
      * The current pixel-space y-coordinate of the top of the screen.
      */
     val currentY: Float = 0.0f,
-    val gridSize: Dp = 10.dp,
+    val gridSize: Dp = 20.dp,
     val density: Float,
 )
 
