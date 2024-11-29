@@ -33,7 +33,5 @@ kotlin {
 }
 
 detekt {
-    source = files(
-        "src/commonMain/kotlin"
-    )
+    source.setFrom("src/commonMain/kotlin")
 }

@@ -1,8 +1,8 @@
 plugins {
     id("org.jetbrains.dokka") version "1.9.20"
     id("org.jetbrains.kotlinx.kover") version "0.6.0"
-    kotlin("plugin.compose") version "2.0.0" apply false
-    id("org.jetbrains.compose") version "1.6.10" apply false
+    kotlin("plugin.compose") version "2.1.0" apply false
+    id("org.jetbrains.compose") version "1.7.1" apply false
     id("io.gitlab.arturbosch.detekt") version "1.23.6" apply false
 }
 
@@ -51,12 +51,12 @@ koverMerged {
 
     htmlReport {
         onCheck.set(true)
-        reportDir.set(File(buildDir, "test/report/html"))
+        reportDir.set(layout.buildDirectory.file("test/report/html").get().asFile)
     }
 
     xmlReport {
         onCheck.set(true)
-        reportFile.set(File(buildDir, "test/report/xml/report.xml"))
+        reportFile.set(layout.buildDirectory.file("test/report/xml/report.xml").get().asFile)
     }
 
     verify {
