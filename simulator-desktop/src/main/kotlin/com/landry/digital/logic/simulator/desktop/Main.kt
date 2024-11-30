@@ -22,6 +22,8 @@ import androidx.compose.ui.window.singleWindowApplication
 import com.arkivanov.decompose.DefaultComponentContext
 import com.arkivanov.essenty.lifecycle.LifecycleRegistry
 import com.landry.digital.logic.simulator.desktop.components.SimulatorComponent
+import com.landry.digital.logic.simulator.desktop.ui.MenuActions
+import com.landry.digital.logic.simulator.desktop.ui.TopMenuBar
 import com.landry.digital.logic.simulator.ui.SimulatorLayout
 
 fun main() {
@@ -32,6 +34,14 @@ const val SIMULATOR_PERIOD = 20L
 
 val simulatorComponent = SimulatorComponent(DefaultComponentContext(LifecycleRegistry()))
 
+val menuActions = MenuActions(
+    onNew = {},
+    onOpen = {},
+    onSave = {},
+    onSaveAs = {},
+    onAbout = {},
+)
+
 @OptIn(ExperimentalComposeUiApi::class)
 fun uiMain() = singleWindowApplication(
     title = "Digital Circuit Simulator",
@@ -41,6 +51,7 @@ fun uiMain() = singleWindowApplication(
     LaunchedEffect(Unit) {
         simulatorComponent.start(SIMULATOR_PERIOD)
     }
+    TopMenuBar(menuActions)
     Box(modifier = Modifier.fillMaxSize().onPointerEvent(PointerEventType.Move) {
         simulatorComponent.onPointerMove(it)
     }.pointerInput(Unit) {
